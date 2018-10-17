@@ -24,6 +24,9 @@ import org.dashbuilder.displayer.client.AbstractGwtDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
+import org.jboss.errai.ioc.client.api.InitBallot;
+
+import com.google.gwt.user.client.Window;
 
 public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
     
@@ -41,6 +44,7 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
     public C3Displayer(View view) {
         super();
         this.view = view;
+        view.init(this);
     }
 
     @Override
@@ -85,20 +89,21 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
     protected void updateVisualization() {
         String bindto = "#" + getView().getId();
         String type = getView().getType();
+        int rows = displayerSettings.getDataSet().getRowCount();
+        int size = displayerSettings.getDataSet().getColumns().size();
         // TODO: retrieve this info from the API;
         String[][] columns = {
                 {"data1", "10",  "20",  "30", "-5"},
                 {"data2", "100", "-10", "10", "-10"}
                 
         }; 
+        
         // RETRIEVE ^^^
         double width = displayerSettings.getChartWidth();
         double height = displayerSettings.getChartHeight();
-        C3ChartData data = C3ChartData.create(columns, type);
-        C3ChartConf conf = C3ChartConf.create(bindto);
-        C3ChartSize size = C3ChartSize.create(width, height);
-        conf.setData(data);
-        conf.setSize(size);
+        C3ChartConf conf = C3ChartConf.create(
+                                C3ChartSize.create(width, height),
+                                C3ChartData.create(columns, type));
         getView().updateChart(conf);
     }
 
