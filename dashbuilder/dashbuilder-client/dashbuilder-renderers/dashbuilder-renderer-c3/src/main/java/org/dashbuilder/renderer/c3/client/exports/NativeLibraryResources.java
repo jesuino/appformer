@@ -8,7 +8,6 @@ public interface NativeLibraryResources extends ClientBundle {
 
     NativeLibraryResources INSTANCE = GWT.create(NativeLibraryResources.class);
 
-    // The File Saver js.
     @Source("js/d3.min.js")
     TextResource d3js();
 
