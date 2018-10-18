@@ -15,9 +15,15 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
+import static org.dashbuilder.displayer.DisplayerSubType.AREA;
+import static org.dashbuilder.displayer.DisplayerSubType.BAR;
+import static org.dashbuilder.displayer.DisplayerSubType.DONUT;
 import static org.dashbuilder.displayer.DisplayerSubType.LINE;
+import static org.dashbuilder.displayer.DisplayerSubType.PIE;
+import static org.dashbuilder.displayer.DisplayerSubType.SMOOTH;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,10 +34,15 @@ import org.dashbuilder.displayer.DisplayerSubType;
 import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.client.AbstractRendererLibrary;
 import org.dashbuilder.displayer.client.Displayer;
+import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bar.C3BarChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.line.C3SmoothChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.pie.C3DonutChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.pie.C3PieChartDisplayer;
 import org.dashbuilder.renderer.c3.client.exports.ResourcesInjector;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+
 
 @ApplicationScoped
 public class C3Renderer extends AbstractRendererLibrary {
@@ -55,28 +66,66 @@ public class C3Renderer extends AbstractRendererLibrary {
     public List<DisplayerSubType> getSupportedSubtypes(DisplayerType displayerType) {
         switch (displayerType) {
         case LINECHART:
-            return Arrays.asList(LINE);
+            return Arrays.asList(LINE, SMOOTH);
+        case BARCHART:
+            return Arrays.asList(BAR);    
+        case PIECHART:
+            return Arrays.asList(PIE);
+        case AREACHART:
+            return Arrays.asList(AREA);            
         default:
-            return Arrays.asList();
+            return Collections.emptyList();
         }
     }
 
     public Displayer lookupDisplayer(DisplayerSettings displayerSettings) {
         ResourcesInjector.ensureInjected();
         DisplayerType displayerType = displayerSettings.getType();
+        DisplayerSubType subtype = displayerSettings.getSubtype();
         C3Displayer displayer;
         switch (displayerType) {
         case LINECHART:
-            displayer = new C3LineChartDisplayer();
+            displayer = getLineChartForSubType(subtype);
             break;
         case BARCHART:
             displayer = new C3BarChartDisplayer();
+            break;
+        case PIECHART:
+            displayer = getPieChartForSubType(subtype);
+            break;
+        case AREACHART:
+            displayer = getAreaChartForSubType(subtype);
             break;
         default:
             return null;
         }
         return displayer;
     }
+
+    private C3Displayer getLineChartForSubType(DisplayerSubType subtype) {
+        C3Displayer displayer;
+        if(subtype == SMOOTH) { 
+            displayer = new C3SmoothChartDisplayer();
+        } else {
+            displayer = new C3LineChartDisplayer();
+        }
+        return displayer;
+    }
+    
+    private C3Displayer getPieChartForSubType(DisplayerSubType subtype) {
+        C3Displayer displayer;
+        if(subtype == DONUT) { 
+            displayer = new C3DonutChartDisplayer();
+        } else {
+            displayer = new C3PieChartDisplayer();
+        }
+        return displayer;
+    }
+    
+    private C3Displayer getAreaChartForSubType(DisplayerSubType subtype) {
+        return new C3AreaChartDisplayer();
+    }
+
 
     @Override
     public List<DisplayerType> getSupportedTypes() {
