@@ -15,8 +15,13 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
+import java.util.List;
+
 import org.dashbuilder.dataset.ColumnType;
+import org.dashbuilder.dataset.DataColumn;
+import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
@@ -87,25 +92,34 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
 
     @Override
     protected void updateVisualization() {
-        String bindto = "#" + getView().getId();
-        String type = getView().getType();
-        int rows = displayerSettings.getDataSet().getRowCount();
-        int size = displayerSettings.getDataSet().getColumns().size();
-        // TODO: retrieve this info from the API;
-        String[][] columns = {
-                {"data1", "10",  "20",  "30", "-5"},
-                {"data2", "100", "-10", "10", "-10"}
-                
-        }; 
-        
-        // RETRIEVE ^^^
-        double width = displayerSettings.getChartWidth();
-        double height = displayerSettings.getChartHeight();
-        C3ChartConf conf = C3ChartConf.create(
-                                C3ChartSize.create(width, height),
-                                C3ChartData.create(columns, type));
+        C3ChartConf conf = buildConfiguration();
         getView().updateChart(conf);
     }
 
+    protected C3ChartConf buildConfiguration() {
+        String type = getView().getType();
+        String[][] columns = retrieveData();
+        double width = displayerSettings.getChartWidth();
+        double height = displayerSettings.getChartHeight();
+        return C3ChartConf.create(
+                    C3ChartSize.create(width, height),
+                    C3ChartData.create(columns, type)
+                );
+    }
+
+    
+    protected String[][] retrieveData() {
+        DataSet dataset = displayerSettings.getDataSet();
+        List<DataColumn> columns = dataset.getColumns();
+        String[][] data = new String[columns.size()][dataset.getRowCount() + 1];
+        for (int i = 0; i < dataset.getColumns().size(); i++) {
+            ColumnSettings settings = displayerSettings.getColumnSettings(columns.get(i));
+            data[i][0] = settings.getColumnName();
+            for (int j = 0; j < dataset.getRowCount(); j++) {
+                data[i][j + 1] = dataset.getValueAt(j, i).toString(); 
+            }
+        }
+        return data;
+    }
 
 }

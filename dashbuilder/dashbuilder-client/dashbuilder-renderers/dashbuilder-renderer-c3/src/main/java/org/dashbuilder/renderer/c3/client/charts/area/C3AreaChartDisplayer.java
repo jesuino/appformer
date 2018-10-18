@@ -11,5 +11,5 @@ public class C3AreaChartDisplayer extends C3Displayer {
     public C3AreaChartDisplayer(View view) {
         super(view);
     }
-
+    
 }
