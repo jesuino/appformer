@@ -46,6 +46,5 @@ public abstract class C3DisplayerView extends AbstractGwtDisplayerView<C3Display
     public String getId() {
         return uniqueId;
     }
-    
 
 }

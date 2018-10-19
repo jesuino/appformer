@@ -17,10 +17,15 @@ package org.dashbuilder.renderer.c3.client;
 
 import static org.dashbuilder.displayer.DisplayerSubType.AREA;
 import static org.dashbuilder.displayer.DisplayerSubType.BAR;
+import static org.dashbuilder.displayer.DisplayerSubType.COLUMN;
 import static org.dashbuilder.displayer.DisplayerSubType.DONUT;
 import static org.dashbuilder.displayer.DisplayerSubType.LINE;
 import static org.dashbuilder.displayer.DisplayerSubType.PIE;
 import static org.dashbuilder.displayer.DisplayerSubType.SMOOTH;
+import static org.dashbuilder.displayer.DisplayerType.AREACHART;
+import static org.dashbuilder.displayer.DisplayerType.BARCHART;
+import static org.dashbuilder.displayer.DisplayerType.LINECHART;
+import static org.dashbuilder.displayer.DisplayerType.PIECHART;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +41,7 @@ import org.dashbuilder.displayer.client.AbstractRendererLibrary;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bar.C3BarChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.bar.C3RotatedBarChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3SmoothChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.pie.C3DonutChartDisplayer;
@@ -68,9 +74,9 @@ public class C3Renderer extends AbstractRendererLibrary {
         case LINECHART:
             return Arrays.asList(LINE, SMOOTH);
         case BARCHART:
-            return Arrays.asList(BAR);    
+            return Arrays.asList(BAR, COLUMN);    
         case PIECHART:
-            return Arrays.asList(PIE);
+            return Arrays.asList(PIE, DONUT);
         case AREACHART:
             return Arrays.asList(AREA);            
         default:
@@ -88,7 +94,7 @@ public class C3Renderer extends AbstractRendererLibrary {
             displayer = getLineChartForSubType(subtype);
             break;
         case BARCHART:
-            displayer = new C3BarChartDisplayer();
+            displayer = createBarChartForSubType(subtype);
             break;
         case PIECHART:
             displayer = getPieChartForSubType(subtype);
@@ -98,6 +104,16 @@ public class C3Renderer extends AbstractRendererLibrary {
             break;
         default:
             return null;
+        }
+        return displayer;
+    }
+
+    private C3Displayer createBarChartForSubType(DisplayerSubType subtype) {
+        C3Displayer displayer;
+        if(subtype == COLUMN) {
+            displayer = new C3BarChartDisplayer();
+        } else {
+            displayer = new C3RotatedBarChartDisplayer();
         }
         return displayer;
     }
@@ -126,9 +142,8 @@ public class C3Renderer extends AbstractRendererLibrary {
         return new C3AreaChartDisplayer();
     }
 
-
     @Override
     public List<DisplayerType> getSupportedTypes() {
-        return Arrays.asList(DisplayerType.LINECHART);
+        return Arrays.asList(LINECHART, BARCHART, PIECHART, AREACHART);
     }
 }

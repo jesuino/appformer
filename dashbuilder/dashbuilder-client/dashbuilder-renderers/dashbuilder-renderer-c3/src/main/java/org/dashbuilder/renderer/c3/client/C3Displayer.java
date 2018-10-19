@@ -19,19 +19,16 @@ import java.util.List;
 
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
-import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
-import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.displayer.client.AbstractGwtDisplayer;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Axis;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
-import org.jboss.errai.ioc.client.api.InitBallot;
-
-import com.google.gwt.user.client.Window;
 
 public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
     
@@ -98,25 +95,59 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
 
     protected C3ChartConf buildConfiguration() {
         String type = getView().getType();
-        String[][] columns = retrieveData();
+        String[][] series = retrieveSeries();
         double width = displayerSettings.getChartWidth();
         double height = displayerSettings.getChartHeight();
+        C3Axis axis = createAxis();
+        C3ChartData data = createData(type, series);
         return C3ChartConf.create(
                     C3ChartSize.create(width, height),
-                    C3ChartData.create(columns, type)
+                    data,
+                    axis
                 );
     }
 
+    protected C3ChartData createData(String type, String[][] series) {
+        return C3ChartData.create(series, type);
+    }
+
+    protected C3Axis createAxis() {
+        C3AxisX axisX = createAxisX();
+        return C3Axis.create(false, axisX);
+    }
     
-    protected String[][] retrieveData() {
-        DataSet dataset = displayerSettings.getDataSet();
-        List<DataColumn> columns = dataset.getColumns();
-        String[][] data = new String[columns.size()][dataset.getRowCount() + 1];
-        for (int i = 0; i < dataset.getColumns().size(); i++) {
-            ColumnSettings settings = displayerSettings.getColumnSettings(columns.get(i));
-            data[i][0] = settings.getColumnName();
-            for (int j = 0; j < dataset.getRowCount(); j++) {
-                data[i][j + 1] = dataset.getValueAt(j, i).toString(); 
+    protected C3AxisX createAxisX() {
+       String[] categories = retrieveCategories();
+       return C3AxisX.create("category", categories);
+    }
+
+    protected String[] retrieveCategories() {
+        List<DataColumn> columns = dataSet.getColumns();
+        String[] categories = null;
+        if(columns.size() > 0) {
+            List<?> values = columns.get(0).getValues();
+            categories = new String[values.size()];
+            for (int i = 0; i < categories.length; i++) {
+                categories[i] = values.get(i).toString();
+            }
+        }
+        return categories;
+    }
+
+    protected String[][] retrieveSeries() {
+        List<DataColumn> columns = dataSet.getColumns();
+        String[][] data  = null;
+        if(columns.size() > 1) {
+            data = new String[columns.size() - 1][];
+            for (int i = 1; i < columns.size(); i++) {
+                DataColumn dataColumn = columns.get(i);
+                List<?> values = dataColumn.getValues();
+                String[] seriesValues = new String[values.size() + 1];
+                seriesValues[0] = columns.get(i).getId();
+                for (int j = 0; j < values.size(); j++) {
+                    seriesValues[j + 1] = values.get(j).toString(); 
+                }
+                data[i - 1] = seriesValues;
             }
         }
         return data;

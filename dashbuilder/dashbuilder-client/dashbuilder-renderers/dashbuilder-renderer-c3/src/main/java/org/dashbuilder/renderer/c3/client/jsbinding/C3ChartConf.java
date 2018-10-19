@@ -14,10 +14,13 @@ import jsinterop.annotations.JsType;
 public class C3ChartConf {  
     
     @JsOverlay
-    public static C3ChartConf create(C3ChartSize size, C3ChartData data) {
+    public static C3ChartConf create(C3ChartSize size, 
+                                     C3ChartData data, 
+                                     C3Axis axis) {
         C3ChartConf instance = new C3ChartConf();
         instance.setSize(size);
         instance.setData(data);
+        instance.setAxis(axis);
         return instance;
     }
     
@@ -27,5 +30,7 @@ public class C3ChartConf {
     public native void setSize(C3ChartSize size);
     @JsProperty
     public native void setData(C3ChartData data);
-
+    @JsProperty
+    public native void setAxis(C3Axis axis);
+    
 }

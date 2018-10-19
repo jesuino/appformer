@@ -6,21 +6,20 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class C3ChartData {
+public class C3AxisX {
     
     @JsOverlay
-    public static C3ChartData create(String[][] columns, String type) {
-        C3ChartData data = new C3ChartData();
-        data.setColumns(columns);
-        data.setType(type);
-        return data;
+    public static C3AxisX create(String type, String[] categories) {
+        C3AxisX instance = new C3AxisX();
+        instance.setType(type);
+        instance.setCategories(categories);
+        return instance;
     }
-    
-    @JsProperty
-    public native void setColumns(String columns[][]);
 
     @JsProperty
     public native void setType(String type);
     
+    @JsProperty
+    public native void setCategories(String categories[]);
 
 }
