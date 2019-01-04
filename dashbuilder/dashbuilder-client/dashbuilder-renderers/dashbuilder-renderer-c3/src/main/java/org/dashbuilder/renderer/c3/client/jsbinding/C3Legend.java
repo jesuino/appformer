@@ -11,25 +11,24 @@ import jsinterop.annotations.JsType;
 public class C3Legend {
     
     @JsOverlay
-    static C3Legend create(boolean show, String position) {
+    static C3Legend create(boolean show, String position, C3LegendInset inset) {
         C3Legend instance = new C3Legend();
         instance.setShow(show);
         instance.setPosition(position);
+        instance.setInset(inset);
         return instance;
     }
-    
+
     @JsOverlay
     public static String convertPosition(Position position) {
-        // Not all positions are supported by C3.
+        // Not all positions are supported by C3, for the not supported we use inset and try to calculate the position
         switch(position) {
         case BOTTOM:
             return position.name().toLowerCase();
-        case IN:
-            return "inset";
         case RIGHT:
             return position.name().toLowerCase();
         default:
-            return "";
+            return "inset";
         }
     }
     
@@ -38,5 +37,8 @@ public class C3Legend {
     
     @JsProperty
     public native void setPosition(String position);
+    
+    @JsProperty
+    public native void setInset(C3LegendInset inset);
     
 }

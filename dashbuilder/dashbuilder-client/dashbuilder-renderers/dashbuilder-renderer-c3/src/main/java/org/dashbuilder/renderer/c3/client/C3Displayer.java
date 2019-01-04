@@ -38,6 +38,7 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Legend;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3LegendInset;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Padding;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
@@ -128,7 +129,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         C3Point point = createPoint();
         C3Padding padding = createPadding();
         C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(), 
-                                           getLegendPosition());
+                                           getLegendPosition(),
+                                           getLegendInsetOld());
         return factory.c3ChartConf(
                     factory.c3ChartSize(width, height),
                     data,
@@ -330,6 +332,14 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         Position legendPosition = displayerSettings.getChartLegendPosition();
         String c3LegendPosition = C3Legend.convertPosition(legendPosition);
         return c3LegendPosition;
+    }
+    
+    private C3LegendInset getLegendInsetOld() {
+        Position legendPosition = displayerSettings.getChartLegendPosition();
+        int chartWidth = displayerSettings.getChartWidth();
+        int chartHeight = displayerSettings.getChartHeight();
+        C3LegendInset inset = C3LegendInset.getInsetForPosition(legendPosition);
+        return inset;
     }
     
 }

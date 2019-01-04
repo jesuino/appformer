@@ -46,8 +46,8 @@ public class C3JsTypesFactory {
     }
     
     
-    public C3Legend c3Legend(boolean show, String position) {
-        return C3Legend.create(show, position);
+    public C3Legend c3Legend(boolean show, String position, C3LegendInset inset) {
+        return C3Legend.create(show, position, inset);
     }
 
     public C3Point c3Point(RadiusCallback r) {
@@ -84,5 +84,5 @@ public class C3JsTypesFactory {
     public C3AxisLabel createC3Label(String text, String position) {
         return C3AxisLabel.create(text, position);
     }
-
+    
 }

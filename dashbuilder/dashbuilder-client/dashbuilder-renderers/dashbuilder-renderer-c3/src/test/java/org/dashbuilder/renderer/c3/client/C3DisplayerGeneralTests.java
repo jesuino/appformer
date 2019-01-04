@@ -61,7 +61,7 @@ public class C3DisplayerGeneralTests extends C3BaseTest {
     public void c3ConfigurationTest() {
         verify(c3Factory).c3ChartSize(SIZE, SIZE);
         verify(c3Factory).c3AxisInfo(eq(false), any(), any());
-        verify(c3Factory).c3Legend(true, LEGEND_POSITION);
+        verify(c3Factory).c3Legend(true, LEGEND_POSITION, null);
         verify(c3Factory).c3Selection(RECEIVE_NOTIFICATION, true, false);
     }
     
