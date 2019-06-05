@@ -16,6 +16,8 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
+import elemental2.dom.Element;
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
@@ -26,7 +28,14 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class GrapesJSConfig {
     
+    @JsOverlay
+    public static GrapesJSConfig create(Element container) {
+        GrapesJSConfig instance = new GrapesJSConfig();
+        instance.setContainer(container);
+        return instance;
+    } 
+    
     @JsProperty
-    public native void setBindto(String targetDivId);
+    public native void setContainer(Element container);
 
 }

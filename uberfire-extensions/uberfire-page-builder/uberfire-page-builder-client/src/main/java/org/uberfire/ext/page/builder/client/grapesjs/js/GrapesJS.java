@@ -28,12 +28,17 @@ import jsinterop.annotations.JsType;
 public interface GrapesJS {
     
     @JsMethod
-    public void init(GrapesJSConfig config);
+    Editor init(GrapesJSConfig config);
         
     class Builder {
 
-        @JsProperty(name = "grapejs", namespace = JsPackage.GLOBAL)
+        @JsProperty(name = "grapesjs", namespace = JsPackage.GLOBAL)
         public static native GrapesJS get();
-    } 
+    }
+    
+    @JsType(isNative = true)
+    interface Editor {
+        
+    }
 
 }

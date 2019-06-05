@@ -48,6 +48,10 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-js</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-client</artifactId>
     </dependency>
     <dependency>
@@ -95,6 +99,17 @@
   </dependencies>
 
   <build>
+    <resources>
+      <!-- Include src/main/java in order not to break the Eclipse GWT plug-in -->
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <!-- Include module descriptors from src/main/resources in order not 
+        to break the Intellij GWT plug-in -->
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -163,6 +178,24 @@
               </resources>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-grapesjs-resources-fonts</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/fonts</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/fonts</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>          
         </executions>
       </plugin>
     </plugins>

@@ -16,10 +16,14 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.widget;
 
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.ext.page.builder.client.exports.ResourcesInjector;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSConfig;
 
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
@@ -28,14 +32,18 @@ import elemental2.dom.HTMLElement;
  *
  */
 @Templated
-public class GrapesJSWidgetViewImpl implements GrapesJSWidgetView {
+@Dependent
+public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View {
     
     @Inject
     @DataField
     public HTMLDivElement grapesJSContainer;
+    
+    private GrapesJSWidget presenter;
 
     @Override
-    public void init(GrapesJSWidgetView.Presenter presenter) {
+    public void init(GrapesJSWidget presenter) {
+        this.presenter = presenter;
         
     }
     
@@ -43,7 +51,10 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidgetView {
     public HTMLElement getElement() {
         return grapesJSContainer;
     }
-
-
+    
+    @Override
+    public void loadEditor() {
+        GrapesJS.Builder.get().init(GrapesJSConfig.create(grapesJSContainer));
+    }
 
 }

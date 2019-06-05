@@ -121,7 +121,7 @@ public class ShowcaseEntryPoint {
         navigationExplorerScreen.getNavTreeEditor()
                 .setPerspectiveContextEnabled(NavTreeDefinitions.GROUP_APP, false)
                 .applyToAllChildren();
-
+        
         // Attach old existing dashboards (created with versions prior to 0.7) under the "dashboards" group
         for (DashboardPerspectiveActivity activity : dashboardManager.getDashboards()) {
             String perspectiveId = activity.getIdentifier();

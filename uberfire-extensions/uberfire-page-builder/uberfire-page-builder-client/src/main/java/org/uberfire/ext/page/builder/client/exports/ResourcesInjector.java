@@ -26,17 +26,18 @@ public class ResourcesInjector {
     
     static boolean grapesJsInjected;
     
-    public static void ensureC3Injected() {
+    public static void ensureGrapesJsInjected() {
         if (!grapesJsInjected) {
             injectGrapesJsResources();
             grapesJsInjected = true;
         }
     }
 
-    
     private static void injectGrapesJsResources() {
         NativeLibraryResources instance = NativeLibraryResources.INSTANCE;
-        StyleInjector.inject(instance.grapescss().getText());
+        // SUPER WORKAROUND THAT MUST BE CHANGED! Downloading same font awesome used by pf
+        String replacedCSS = instance.grapescss().getText().replaceAll("v=4.7.0", "v=4.6.3");
+        StyleInjector.inject(replacedCSS);
         ScriptInjector.fromString(instance.grapesjs().getText())
                       .setWindow(ScriptInjector.TOP_WINDOW)
                       .inject();

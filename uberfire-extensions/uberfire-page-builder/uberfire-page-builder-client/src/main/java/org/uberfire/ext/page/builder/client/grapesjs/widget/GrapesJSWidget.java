@@ -16,7 +16,35 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.widget;
 
-public class GrapesJSWidget implements GrapesJSWidgetView.Presenter {
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.uberfire.client.mvp.UberElemental;
+
+@Dependent
+public class GrapesJSWidget {
     
+    public interface View extends UberElemental<GrapesJSWidget> {
+        
+        void loadEditor();
+        
+    }
+    
+    View view;
+
+    @Inject
+    public GrapesJSWidget(View view) {
+        this.view = view;
+        view.init(this);
+    }
+
+    public View getView() {
+        return view;
+    }
+    
+    
+    public void load() {
+        view.loadEditor();
+    }
 
 }

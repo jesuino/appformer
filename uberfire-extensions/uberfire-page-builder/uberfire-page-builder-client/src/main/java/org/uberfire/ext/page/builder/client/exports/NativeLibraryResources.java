@@ -19,6 +19,7 @@ package org.uberfire.ext.page.builder.client.exports;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.resources.client.TextResource;
 
 /**
@@ -31,7 +32,8 @@ public interface NativeLibraryResources extends ClientBundle {
     @Source("js/grapes.min.js")
     TextResource grapesjs();
 
+    @NotStrict
     @Source("css/grapes.min.css")
     CssResource grapescss(); 
-
+    
 }

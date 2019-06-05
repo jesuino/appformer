@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -30,6 +31,11 @@
         <groupId>com.ahome-it</groupId>
         <artifactId>lienzo-core</artifactId>
         <version>${version.com.ahome-it.lienzo-core.charts}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-page-builder-client</artifactId>
+        <version>${uberfire.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -437,6 +443,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- New Page Builder -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-page-builder-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Log -->
 
     <dependency>
@@ -758,10 +771,14 @@
             <!-- Uberfire Experimentals -->
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
-
+            
+            <!--  Page Builder -->
+            <compileSourcesArtifact>org.uberfire:uberfire-page-builder-client</compileSourcesArtifact>
+            
           </compileSourcesArtifacts>
           <runTarget>dashbuilder.html</runTarget>
-          <extraJvmArgs>-Xmx4024m -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
+          <extraJvmArgs>-Xmx4024m -XX:CompileThreshold=7000
+            -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
           <noServer>false</noServer>
           <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
           <hostedWebapp>src/main/webapp</hostedWebapp>
@@ -894,7 +911,8 @@
         </plugins>
       </build>
     </profile>
-    <!-- profile to disable GWT compilation of showcase (useful in full downstream builds) -->
+    <!-- profile to disable GWT compilation of showcase (useful in full downstream 
+      builds) -->
     <profile>
       <id>no-showcase</id>
       <build>

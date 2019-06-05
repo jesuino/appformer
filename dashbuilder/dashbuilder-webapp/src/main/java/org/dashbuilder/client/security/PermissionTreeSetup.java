@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerI18n;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.uberfire.client.authz.PerspectiveTreeProvider;
+import org.uberfire.ext.page.builder.client.perspectives.PageBuilderPerspective;
 import org.uberfire.ext.preferences.client.admin.AdminPagePerspective;
 import org.uberfire.ext.preferences.client.central.PreferencesCentralPerspective;
 
@@ -54,6 +55,7 @@ public class PermissionTreeSetup {
         perspectiveTreeProvider.setPerspectiveName(SECURITY, i18n.menu_security());
         perspectiveTreeProvider.setPerspectiveName(SALES_DASHBOARD, i18n.menu_dashboards_salesdb());
         perspectiveTreeProvider.setPerspectiveName(SALES_REPORTS, i18n.menu_dashboards_salesreports());
+        perspectiveTreeProvider.setPerspectiveName(PageBuilderPerspective.ID, "Page Builder");
 
         // Exclude some perspectives
         perspectiveTreeProvider.excludePerspectiveId("StandaloneEditorPerspective"); /* uberfire */

@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package org.uberfire.ext.page.builder.client;
+package org.uberfire.ext.page.builder.client.screen;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.ext.page.builder.client.grapesjs.widget.GrapesJSWidgetView;
+import org.uberfire.ext.page.builder.client.exports.ResourcesInjector;
+import org.uberfire.ext.page.builder.client.grapesjs.widget.GrapesJSWidget;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.lifecycle.OnStartup;
 
-import elemental2.dom.Element;
+import com.google.gwt.user.client.ui.IsWidget;
+
+import elemental2.dom.HTMLElement;
 
 /**
  *
@@ -33,17 +39,17 @@ import elemental2.dom.Element;
 @WorkbenchScreen(identifier = PageBuilderScreen.ID)
 public class PageBuilderScreen {
     
-    GrapesJSWidgetView grapesJSWidgetView; 
+    public static final String ID = "PageBuilderScreen";
+
+    GrapesJSWidget grapesJSWidget; 
     
     public PageBuilderScreen() {
     }
 
     @Inject
-    public PageBuilderScreen(GrapesJSWidgetView grapesJSWidgetView) {
-        this.grapesJSWidgetView = grapesJSWidgetView;
+    public PageBuilderScreen(GrapesJSWidget grapesJSWidget) {
+        this.grapesJSWidget = grapesJSWidget;
     }
-
-    public static final String ID = "PageBuilderScreen";
     
     @WorkbenchPartTitle
     public String title() {
@@ -51,8 +57,21 @@ public class PageBuilderScreen {
     }
     
     @WorkbenchPartView
-    public Element part() {
-        return grapesJSWidgetView.getElement();
+    public IsWidget part() {
+        HTMLElement element = grapesJSWidget.getView().getElement();
+        return ElementWrapperWidget.getWidget(element);
     }
+    
+    @OnOpen
+    public void onOpen() {
+        grapesJSWidget.load();
+    }
+    
+    @OnStartup
+    public void init() {
+        ResourcesInjector.ensureGrapesJsInjected();
+    }
+    
+    
 
 }
