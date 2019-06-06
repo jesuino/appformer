@@ -29,13 +29,18 @@ import jsinterop.annotations.JsType;
 public class GrapesJSConfig {
     
     @JsOverlay
-    public static GrapesJSConfig create(Element container) {
+    public static GrapesJSConfig create(Element container, String[] plugins) {
         GrapesJSConfig instance = new GrapesJSConfig();
         instance.setContainer(container);
+        instance.setPlugins(plugins);
         return instance;
     } 
     
     @JsProperty
     public native void setContainer(Element container);
+    
+    @JsProperty
+    public native void setPlugins(String[] plugins);
+    
 
 }

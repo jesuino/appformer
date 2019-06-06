@@ -33,7 +33,15 @@ public interface NativeLibraryResources extends ClientBundle {
     TextResource grapesjs();
 
     @NotStrict
-    @Source("css/grapes.min.css")
+    @Source("css/grapes.css")
     CssResource grapescss(); 
+    
+    @Source("js/grapesjs-preset-webpage.min.js")
+    TextResource grapespresetwebpagejs();
+
+    @NotStrict
+    @Source("css/grapesjs-preset-webpage.min.css")
+    CssResource grapespresetwebpagecss(); 
+    
     
 }

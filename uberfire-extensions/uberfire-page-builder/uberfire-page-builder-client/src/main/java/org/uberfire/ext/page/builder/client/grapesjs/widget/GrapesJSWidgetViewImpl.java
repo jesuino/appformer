@@ -16,6 +16,8 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.widget;
 
+import java.util.Arrays;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -40,6 +42,8 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View {
     public HTMLDivElement grapesJSContainer;
     
     private GrapesJSWidget presenter;
+    
+    final static String PLUGINS[] = {"grapesjs-preset-webpage"}; 
 
     @Override
     public void init(GrapesJSWidget presenter) {
@@ -54,7 +58,8 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View {
     
     @Override
     public void loadEditor() {
-        GrapesJS.Builder.get().init(GrapesJSConfig.create(grapesJSContainer));
+        GrapesJSConfig conf = GrapesJSConfig.create(grapesJSContainer, PLUGINS);
+        GrapesJS.Builder.get().init(conf);
     }
 
 }

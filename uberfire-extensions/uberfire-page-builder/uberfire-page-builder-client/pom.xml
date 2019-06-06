@@ -26,6 +26,7 @@
 
   <properties>
     <version.org.grapesjs>0.14.50</version.org.grapesjs>
+    <version.org.grapesjs.preset.webpage>0.1.10</version.org.grapesjs.preset.webpage>
 
   </properties>
 
@@ -35,6 +36,11 @@
         <groupId>org.webjars.npm</groupId>
         <artifactId>grapesjs</artifactId>
         <version>${version.org.grapesjs}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars.npm</groupId>
+        <artifactId>grapesjs-preset-webpage</artifactId>
+        <version>${version.org.grapesjs.preset.webpage}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -136,6 +142,27 @@
               <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
           </execution>
+          <execution>
+            <id>unpack-grapesjs-preset-webpage</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.npm</groupId>
+                  <artifactId>grapesjs-preset-webpage</artifactId>
+                  <version>${version.org.grapesjs.preset.webpage}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/grapesjs-preset-webpage</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -161,7 +188,25 @@
             </configuration>
           </execution>
           <execution>
-            <id>copy-grapesjs-resources-css</id>
+            <id>copy-grapesjs-preset-webpage-resources-js</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/js</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/grapesjs-preset-webpage/META-INF/resources/webjars/grapesjs-preset-webpage/${version.org.grapesjs.preset.webpage}/dist</directory>
+                  <includes>
+                    <include>grapesjs-preset-webpage.min.js</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-grapesjs-preset-webpage-resources-css</id>
             <phase>process-resources</phase>
             <goals>
               <goal>copy-resources</goal>
@@ -170,32 +215,24 @@
               <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/css</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/css</directory>
+                  <directory>${project.build.directory}/grapesjs-preset-webpage/META-INF/resources/webjars/grapesjs-preset-webpage/${version.org.grapesjs.preset.webpage}/dist</directory>
                   <includes>
-                    <include>grapes.min.css</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-grapesjs-resources-fonts</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/fonts</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/fonts</directory>
-                  <includes>
-                    <include>**</include>
+                    <include>grapesjs-preset-webpage.min.css</include>
                   </includes>
                 </resource>
               </resources>
             </configuration>
           </execution>          
+          <!-- <execution> <id>copy-grapesjs-resources-css</id> <phase>process-resources</phase> 
+            <goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/css</outputDirectory> 
+            <resources> <resource> <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/css</directory> 
+            <includes> <include>grapes.min.css</include> </includes> </resource> </resources> 
+            </configuration> </execution> <execution> <id>copy-grapesjs-resources-fonts</id> 
+            <phase>process-resources</phase> <goals> <goal>copy-resources</goal> </goals> 
+            <configuration> <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/fonts</outputDirectory> 
+            <resources> <resource> <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/fonts</directory> 
+            <includes> <include>**</include> </includes> </resource> </resources> </configuration> 
+            </execution> -->
         </executions>
       </plugin>
     </plugins>

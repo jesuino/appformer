@@ -17,7 +17,6 @@
 package org.uberfire.ext.page.builder.client.exports;
 
 import com.google.gwt.core.client.ScriptInjector;
-import com.google.gwt.dom.client.StyleInjector;
 
 /**
  *
@@ -36,9 +35,12 @@ public class ResourcesInjector {
     private static void injectGrapesJsResources() {
         NativeLibraryResources instance = NativeLibraryResources.INSTANCE;
         // SUPER WORKAROUND THAT MUST BE CHANGED! Downloading same font awesome used by pf
-        String replacedCSS = instance.grapescss().getText().replaceAll("v=4.7.0", "v=4.6.3");
-        StyleInjector.inject(replacedCSS);
+        instance.grapescss().ensureInjected();
+        instance.grapespresetwebpagecss().ensureInjected();
         ScriptInjector.fromString(instance.grapesjs().getText())
+                      .setWindow(ScriptInjector.TOP_WINDOW)
+                      .inject();
+        ScriptInjector.fromString(instance.grapespresetwebpagejs().getText())
                       .setWindow(ScriptInjector.TOP_WINDOW)
                       .inject();
     }
