@@ -74,7 +74,6 @@ public class PageBuilderServiceImpl implements PageBuilderService {
         try {
             pageJSON = ioService.readAllString(pagePath);
         } catch (NoSuchFileException e) {
-            System.out.println("Creating new file");
             PageModel pageModel = new PageModel();
             pageJSON = ServerMarshalling.toJSON(pageModel);
             ioService.write(pagePath, pageJSON);

@@ -24,53 +24,45 @@ import org.uberfire.client.mvp.UberElemental;
 import org.uberfire.ext.page.builder.api.model.PageModel;
 import org.uberfire.ext.page.builder.api.service.PageBuilderService;
 
-@Dependent
-public class GrapesJSWidget {
-    
-    public interface View extends UberElemental<GrapesJSWidget> {
-        
-        void loadEditor(PageModel pageModel);
-        
-        void sucessSaving();
 
-        void error(String string);
+@Dependent
+public class GrapesJSPageDisplayer {
+
+    public interface View extends UberElemental<GrapesJSPageDisplayer> {
+
+        void displayContent(PageModel pageModel);
         
+        void error(String msg);
+
+        void clearContent();
+
     }
-    
+
     View view;
+
     private Caller<PageBuilderService> pageBuilderService;
 
     @Inject
-    public GrapesJSWidget(View view, 
-                          Caller<PageBuilderService> pageBuilderService) {
+    public GrapesJSPageDisplayer(View view, Caller<PageBuilderService> pageBuilderService) {
         this.view = view;
         this.pageBuilderService = pageBuilderService;
         view.init(this);
     }
+    
+    public void loadContent() {
+        pageBuilderService.call(pageModel -> view.displayContent((PageModel) pageModel), 
+                               (msg, error) -> {
+                                   view.error("Error loading initial content: " + error.getMessage());
+                                   return true;
+                                }).get();
+    }
+    
+    public void clearContent() {
+        view.clearContent();
+    }
 
     public View getView() {
         return view;
-    }
-    
-    
-    public void load() {
-        pageBuilderService.call(pageModel -> view.loadEditor((PageModel) pageModel), 
-                               (msg, error) -> {
-                                    view.error("Error loading initial content: " + error.getMessage());
-                                    return true;
-                                }).get();
-        
-    }
-
-    /**
-     * @param html
-     * @param css
-     */
-    public void saveContent(String html, String css) {
-        pageBuilderService.call(pageModel -> view.sucessSaving(), (msg, error) -> {
-            view.error("Error saving content: " + error.getMessage());
-            return true;
-        }).save(html, css);
     }
 
 }

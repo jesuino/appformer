@@ -17,6 +17,7 @@ package org.dashbuilder.client.navigation;
 
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.navigation.impl.NavTreeBuilder;
+import org.uberfire.ext.page.builder.client.perspectives.PageBuilderDisplayerPerspective;
 import org.uberfire.ext.page.builder.client.perspectives.PageBuilderPerspective;
 
 import static org.dashbuilder.navigation.workbench.NavWorkbenchCtx.*;
@@ -38,6 +39,7 @@ public interface NavTreeDefinitions {
     String ENTRY_SALES_DASHBOARD = "app_salesDashboard";
     String ENTRY_SALES_REPORTS = "app_salesReports";
     String ENTRY_PAGE_BUILDER = "app_page_builder";
+    String ENTRY_PAGE_BUILDER_DISPLAYER = "app_page_builder_displayer";
 
     NavTree NAV_TREE_DEFAULT = new NavTreeBuilder()
             .group(GROUP_APP, "Default (Top Menu)", "The items displayed by the application's top menu bar", false)
@@ -52,6 +54,7 @@ public interface NavTreeDefinitions {
                 .group(GROUP_DASHBOARDS, "Dashboards", "The default location for dashboard items", false)
                     .item(ENTRY_SALES_DASHBOARD, "Sales dashboard", null, true, perspective(SALES_DASHBOARD))
                     .item(ENTRY_SALES_REPORTS, "Sales reports", null, true, perspective(SALES_REPORTS))
+                    .item(ENTRY_PAGE_BUILDER_DISPLAYER, "Page Builder displayer", null, true, perspective(PageBuilderDisplayerPerspective.ID))
                     .endGroup()
             .endGroup()
         .build();

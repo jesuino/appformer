@@ -21,25 +21,24 @@ import javax.enterprise.context.ApplicationScoped;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
-import org.uberfire.ext.page.builder.client.screen.PageBuilderScreen;
+import org.uberfire.ext.page.builder.client.screen.PageBuilderDisplayerScreen;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PageBuilderPerspective.ID)
-public class PageBuilderPerspective {
+@WorkbenchPerspective(identifier = PageBuilderDisplayerPerspective.ID)
+public class PageBuilderDisplayerPerspective {
     
-    public static final String ID = "PageBuilderPerspective";
+    public static final String ID = "PageBuilderDisplayerPerspective";
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
         PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(PageBuilderScreen.ID);
+        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(PageBuilderDisplayerScreen.ID);
         perspective.getRoot().getParts().add(new PartDefinitionImpl(defaultPlaceRequest));
         return perspective;
-        
     }
 
 }

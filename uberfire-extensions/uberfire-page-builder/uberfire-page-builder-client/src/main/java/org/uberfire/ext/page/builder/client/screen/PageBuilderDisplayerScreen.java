@@ -24,7 +24,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.ext.page.builder.client.exports.ResourcesInjector;
-import org.uberfire.ext.page.builder.client.grapesjs.widget.GrapesJSWidget;
+import org.uberfire.ext.page.builder.client.grapesjs.widget.GrapesJSPageDisplayer;
+import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 
@@ -36,35 +37,39 @@ import elemental2.dom.HTMLElement;
  *
  */
 @ApplicationScoped
-@WorkbenchScreen(identifier = PageBuilderScreen.ID)
-public class PageBuilderScreen {
+@WorkbenchScreen(identifier = PageBuilderDisplayerScreen.ID)
+public class PageBuilderDisplayerScreen {
     
-    public static final String ID = "PageBuilderScreen";
-
-    GrapesJSWidget grapesJSWidget; 
+    public static final String ID = "PageBuilderDisplayerScreen";
     
-    public PageBuilderScreen() {
+    GrapesJSPageDisplayer grapesJSPageDisplayer;
+    
+    public PageBuilderDisplayerScreen() {
     }
 
     @Inject
-    public PageBuilderScreen(GrapesJSWidget grapesJSWidget) {
-        this.grapesJSWidget = grapesJSWidget;
+    public PageBuilderDisplayerScreen(GrapesJSPageDisplayer grapesJSPageDisplayer) {
+        this.grapesJSPageDisplayer = grapesJSPageDisplayer;
     }
     
     @WorkbenchPartTitle
     public String title() {
-        return "Page Builder";
+        return "Page Builder Displayer";
     }
     
     @WorkbenchPartView
     public IsWidget part() {
-        HTMLElement element = grapesJSWidget.getView().getElement();
+        HTMLElement element = grapesJSPageDisplayer.getView().getElement();
         return ElementWrapperWidget.getWidget(element);
     }
     
     @OnOpen
     public void onOpen() {
-        grapesJSWidget.load();
+        grapesJSPageDisplayer.loadContent();
+    }
+    
+    @OnClose
+    public void onClose() {
     }
     
     @OnStartup

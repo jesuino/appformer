@@ -36,9 +36,6 @@ import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 
-/**
- *
- */
 @Templated
 @Dependent
 public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
