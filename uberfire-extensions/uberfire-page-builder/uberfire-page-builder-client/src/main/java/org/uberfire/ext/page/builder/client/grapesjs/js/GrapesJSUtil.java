@@ -16,36 +16,20 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
-import jsinterop.annotations.JsMethod;
-import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsProperty;
-import jsinterop.annotations.JsType;
-
 /**
  *
  */
-@JsType(isNative = true)
-public interface GrapesJS {
+public class GrapesJSUtil {
     
-    @JsMethod
-    Editor init(GrapesJSConfig config);
+    public static native void addCssClassPrefix(GrapesJS.Editor editor, String prefix) /*-{
+            editor.on('selector:add', function(selector) {
+                var name = selector.get('name');
         
-    class Builder {
-
-        @JsProperty(name = "grapesjs", namespace = JsPackage.GLOBAL)
-        public static native GrapesJS get();
-        
-    }
-    
-    @JsType(isNative = true)
-    interface Editor {
-        
-        @JsMethod
-        String getHtml();
-        
-        @JsMethod
-        String getCss();
-        
-    }
+                if (selector.get('type') === editor.SelectorManager.Selector.TYPE_CLASS && 
+                    name.indexOf(prefix) !== 0) {
+                    selector.set('name', prefix + name);
+                }
+            });
+    }-*/;
 
 }

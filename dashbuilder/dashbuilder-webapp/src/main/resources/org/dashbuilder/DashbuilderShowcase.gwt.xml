@@ -21,6 +21,7 @@
   <inherits name="org.dashbuilder.renderer.C3Renderer"/>
   
   <inherits name="org.uberfire.ext.page.builder.UberfirePageBuilderClient"/>
+  <inherits name="org.uberfire.ext.page.builder.UberfirePageBuilderAPI"/>
   
 
   <source path='client'/>

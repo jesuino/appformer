@@ -21,7 +21,7 @@
   <inherits name='org.jboss.errai.ioc.Container'/>
   
   <inherits name="org.uberfire.UberfireClientAll"/> 
-
+  <inherits name="org.uberfire.ext.page.builder.UberfirePageBuilderAPI"/>
   <inherits name="com.google.gwt.i18n.I18N"/>
 
   <source path='client'/>

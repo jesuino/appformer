@@ -34,6 +34,16 @@
       </dependency>
       <dependency>
         <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-page-builder-api</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-page-builder-backend</artifactId>
+        <version>${uberfire.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
         <artifactId>uberfire-page-builder-client</artifactId>
         <version>${uberfire.version}</version>
       </dependency>
@@ -446,6 +456,14 @@
     <!-- New Page Builder -->
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-page-builder-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-page-builder-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-page-builder-client</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -771,10 +789,11 @@
             <!-- Uberfire Experimentals -->
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
-            
-            <!--  Page Builder -->
+
+            <!-- Page Builder -->
             <compileSourcesArtifact>org.uberfire:uberfire-page-builder-client</compileSourcesArtifact>
-            
+            <compileSourcesArtifact>org.uberfire:uberfire-page-builder-api</compileSourcesArtifact>
+
           </compileSourcesArtifacts>
           <runTarget>dashbuilder.html</runTarget>
           <extraJvmArgs>-Xmx4024m -XX:CompileThreshold=7000

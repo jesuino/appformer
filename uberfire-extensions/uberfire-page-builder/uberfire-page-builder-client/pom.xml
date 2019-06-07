@@ -42,12 +42,20 @@
         <artifactId>grapesjs-preset-webpage</artifactId>
         <version>${version.org.grapesjs.preset.webpage}</version>
       </dependency>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-page-builder-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-page-builder-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
@@ -222,7 +230,7 @@
                 </resource>
               </resources>
             </configuration>
-          </execution>          
+          </execution>
           <!-- <execution> <id>copy-grapesjs-resources-css</id> <phase>process-resources</phase> 
             <goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${project.build.outputDirectory}/org/uberfire/ext/page/builder/client/exports/css</outputDirectory> 
             <resources> <resource> <directory>${project.build.directory}/grapesjs/META-INF/resources/webjars/grapesjs/${version.org.grapesjs}/dist/css</directory> 

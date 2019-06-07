@@ -16,35 +16,21 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
-import elemental2.dom.Element;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-/**
- *
- */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class GrapesJSConfig {
+public class StorageManager {
     
     @JsOverlay
-    public static GrapesJSConfig create(Element container, String[] plugins) {
-        GrapesJSConfig instance = new GrapesJSConfig();
-        instance.setContainer(container);
-        instance.setStorageManager(StorageManager.create(false));
-        instance.setPlugins(plugins);
-        return instance;
-    } 
+    public static StorageManager create(boolean autocomplete) {
+        StorageManager storageManager = new StorageManager();
+        storageManager.setAutoload(false);
+        return storageManager;
+    }
     
-    @JsProperty
-    public native void setContainer(Element container);
-    
-    @JsProperty
-    public native void setPlugins(String[] plugins);
-    
-    @JsProperty
-    public native void setStorageManager(StorageManager storageManager);
-    
-
+    @JsProperty(name= "autoload")
+    public native void setAutoload(boolean autoload);
 }
