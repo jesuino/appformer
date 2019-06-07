@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.client.mvp.UberElemental;
+import org.uberfire.ext.page.builder.api.model.PageModel;
 import org.uberfire.ext.page.builder.api.service.PageBuilderService;
 
 @Dependent
@@ -28,14 +29,14 @@ public class GrapesJSWidget {
     
     public interface View extends UberElemental<GrapesJSWidget> {
         
-        void loadEditor();
+        void loadEditor(PageModel pageModel);
         
         void sucessSaving();
 
         /**
          * @param string
          */
-        void errorSaving(String string);
+        void error(String string);
         
     }
     
@@ -56,7 +57,12 @@ public class GrapesJSWidget {
     
     
     public void load() {
-        view.loadEditor();
+        pageBuilderService.call(pageModel -> view.loadEditor((PageModel) pageModel), 
+                               (msg, error) -> {
+                                    view.error("Error loading initial content: " + error.getMessage());
+                                    return true;
+                                }).get();
+        
     }
 
     /**
@@ -65,7 +71,7 @@ public class GrapesJSWidget {
      */
     public void saveContent(String html, String css) {
         pageBuilderService.call(pageModel -> view.sucessSaving(), (msg, error) -> {
-            view.errorSaving("Error saving content: " + error.getMessage());
+            view.error("Error saving content: " + error.getMessage());
             return true;
         }).save(html, css);
     }

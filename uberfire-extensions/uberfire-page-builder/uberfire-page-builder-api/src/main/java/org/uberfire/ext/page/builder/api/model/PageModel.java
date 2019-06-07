@@ -24,9 +24,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class PageModel {
     
-    private String html;
+    private String html = "";
     
-    private String css;
+    private String css = "";
     
     public PageModel() {
     }

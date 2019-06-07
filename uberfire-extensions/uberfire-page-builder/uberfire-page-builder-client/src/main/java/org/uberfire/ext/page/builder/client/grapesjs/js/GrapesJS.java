@@ -45,6 +45,12 @@ public interface GrapesJS {
         
         @JsMethod
         String getCss();
+
+        @JsMethod
+        void setStyle(String css);
+
+        @JsMethod
+        void setComponents(String html);
         
     }
 

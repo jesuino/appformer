@@ -30,6 +30,7 @@ import org.uberfire.ext.page.builder.api.service.PageBuilderService;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
+import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
@@ -69,7 +70,15 @@ public class PageBuilderServiceImpl implements PageBuilderService {
     @Override
     public PageModel get() {
         Path pagePath = getLocationPath();
-        String pageJSON = ioService.readAllString(pagePath);
+        String pageJSON = "";
+        try {
+            pageJSON = ioService.readAllString(pagePath);
+        } catch (NoSuchFileException e) {
+            System.out.println("Creating new file");
+            PageModel pageModel = new PageModel();
+            pageJSON = ServerMarshalling.toJSON(pageModel);
+            ioService.write(pagePath, pageJSON);
+        }
         return ServerMarshalling.fromJSON(pageJSON, PageModel.class);
     }
     

@@ -23,12 +23,12 @@ import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.ext.page.builder.api.model.PageModel;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Editor;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSConfig;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSUtil;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import elemental2.dom.DomGlobal;
@@ -72,9 +72,11 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
     }
     
     @Override
-    public void loadEditor() {
+    public void loadEditor(PageModel pageModel) {
         GrapesJSConfig conf = GrapesJSConfig.create(grapesJSContainer, PLUGINS);
         editor = GrapesJS.Builder.get().init(conf);
+        editor.setComponents(pageModel.getHtml());
+        editor.setStyle(pageModel.getCss());
         GrapesJSUtil.addCssClassPrefix(editor, "appformer-page-");
     }
     
@@ -90,7 +92,7 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
         DomGlobal.window.alert("Content Saved with success");
     }
     @Override
-    public void errorSaving(String message) {
+    public void error(String message) {
         btnSave.disabled = false;
         DomGlobal.window.alert(message);
     }
