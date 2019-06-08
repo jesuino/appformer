@@ -16,32 +16,22 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
-import elemental2.dom.Element;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class GrapesJSConfig {
+public class BlockAttributes {
     
     @JsOverlay
-    public static GrapesJSConfig create(Element container, String[] plugins) {
-        GrapesJSConfig instance = new GrapesJSConfig();
-        instance.setContainer(container);
-        instance.setStorageManager(StorageManager.create(false));
-        instance.setPlugins(plugins);
+    public static BlockAttributes create(String title) {
+        BlockAttributes instance = new BlockAttributes();
+        instance.setTitle(title);
         return instance;
     } 
     
     @JsProperty
-    public native void setContainer(Element container);
-    
-    @JsProperty
-    public native void setPlugins(String[] plugins);
-    
-    @JsProperty
-    public native void setStorageManager(StorageManager storageManager);
-    
+    public native void setTitle(String title); 
 
 }

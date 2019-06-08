@@ -24,6 +24,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.ext.page.builder.api.model.PageModel;
+import org.uberfire.ext.page.builder.client.grapesjs.components.CustomComponentsLoader;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Editor;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSConfig;
@@ -52,9 +53,12 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
     @DataField
     public HTMLButtonElement btnSave;
     
+    @Inject
+    CustomComponentsLoader customComponentsLoader;
+    
     private GrapesJSWidget presenter;
     
-    final static String PLUGINS[] = {"grapesjs-preset-webpage"};
+    final static String PLUGINS[] = { "grapesjs-preset-webpage" };
 
     private Editor editor; 
 
@@ -75,6 +79,7 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
         editor.setComponents(pageModel.getHtml());
         editor.setStyle(pageModel.getCss());
         GrapesJSUtil.addCssClassPrefix(editor, "appformer-page-");
+        customComponentsLoader.applyPlugins(editor);
     }
     
     @EventHandler("btnSave")

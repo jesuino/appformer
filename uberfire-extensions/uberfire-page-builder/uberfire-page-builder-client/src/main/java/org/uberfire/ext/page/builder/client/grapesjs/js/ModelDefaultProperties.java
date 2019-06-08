@@ -16,32 +16,48 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
-import elemental2.dom.Element;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class GrapesJSConfig {
+public class ModelDefaultProperties {
     
     @JsOverlay
-    public static GrapesJSConfig create(Element container, String[] plugins) {
-        GrapesJSConfig instance = new GrapesJSConfig();
-        instance.setContainer(container);
-        instance.setStorageManager(StorageManager.create(false));
-        instance.setPlugins(plugins);
+    public static ModelDefaultProperties create(String extend, Trait[] traits) {
+        ModelDefaultProperties instance = new ModelDefaultProperties();
+        instance.setExtend(extend);
+        instance.setTraits(traits);
+        // no time, brother - default values
+        instance.setDroppable(false);
+        instance.setHoverable(true);
+        instance.setResizable(true);
+        instance.setLayerable(true);
+        instance.setLayerable(true);
+        instance.setHighlightable(true);
         return instance;
-    } 
+    }
     
     @JsProperty
-    public native void setContainer(Element container);
+    public native void setExtend(String extend);
     
     @JsProperty
-    public native void setPlugins(String[] plugins);
+    public native void setDroppable(boolean droppable);
     
     @JsProperty
-    public native void setStorageManager(StorageManager storageManager);
+    public native void setHoverable(boolean hoverable);
     
-
+    @JsProperty
+    public native void setResizable(boolean resizable);
+    
+    @JsProperty
+    public native void setLayerable(boolean layerable);
+    
+    @JsProperty
+    public native void setHighlightable(boolean highlightable);
+    
+    @JsProperty
+    public native void setTraits(Trait[] traits);   
+    
 }

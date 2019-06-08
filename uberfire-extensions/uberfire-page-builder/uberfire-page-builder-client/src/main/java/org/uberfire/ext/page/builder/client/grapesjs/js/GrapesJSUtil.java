@@ -16,9 +16,8 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
-/**
- *
- */
+import elemental2.core.JsObject;
+
 public class GrapesJSUtil {
     
     public static native void addCssClassPrefix(GrapesJS.Editor editor, String prefix) /*-{
@@ -31,5 +30,12 @@ public class GrapesJSUtil {
                 }
             });
     }-*/;
-
+    
+    public static native GrapesJS.Model buildExtendedModel(GrapesJS.Model defaultModel, ModelDefaultProperties baseModel) /*-{
+        return defaultModel.extend({
+            // Extend default properties
+            defaults: Object.assign({}, defaultModel.prototype.defaults, baseModel),
+        });
+    }-*/;
+    
 }
