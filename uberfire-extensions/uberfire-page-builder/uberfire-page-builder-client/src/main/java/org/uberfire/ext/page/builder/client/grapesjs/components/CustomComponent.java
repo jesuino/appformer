@@ -18,29 +18,26 @@ package org.uberfire.ext.page.builder.client.grapesjs.components;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Type;
 
-import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
 
 
 public interface CustomComponent {
     
-    Element defaultPreviewElement = DomGlobal.document.createElement("div");
-    
     ComponentBlock getBlock();
 
-    ComponentType getType(Type defaultType);
+    Type getType(Type defaultType);
     
     default List<String> getComponentProperties() {
         return Collections.emptyList();
     }
     
-    default Element buildPreview(Element parent, Map<String, String> data) {
-        defaultPreviewElement.innerHTML = "<em>Preview</em>";
-        return defaultPreviewElement;
+    default void build(Element parent) {
+        parent.innerHTML = "<em>Preview</em>";
     }
+
+    String getTypeId();
 
 }

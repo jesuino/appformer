@@ -80,6 +80,21 @@ public interface GrapesJS {
         
     }
     
+    @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
+    class TypeDescriptor {
+        
+        @JsOverlay
+        public static TypeDescriptor create(String type) {
+            TypeDescriptor instance = new TypeDescriptor();
+            instance.setType(type);
+            return instance;
+        }
+        
+        @JsProperty
+        public native void setType(String type);
+        
+    }
+    
     @JsType(isNative = true)
     interface View {
         
@@ -89,7 +104,7 @@ public interface GrapesJS {
     interface Model {
         
         @JsMethod
-        Model extend(ModelDefaultProperties other);
+        Model extend(ModelDefaultProperties other, ModelTypeRecognizer recognizer);
         
         @JsProperty
         ModelAttributes getAttributes();
@@ -101,6 +116,20 @@ public interface GrapesJS {
         void addAttributes(JsObject attrs);
 
         void append(Element previewElement);
+    }
+    
+    @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
+    class ModelTypeRecognizer {
+        
+        @JsOverlay
+        public static ModelTypeRecognizer create(ElementTypeTester tester) {
+            ModelTypeRecognizer instance = new ModelTypeRecognizer();
+            instance.setIsElement(tester);
+            return instance;
+        }
+        
+        @JsProperty
+        public native void setIsElement(ElementTypeTester tester);
     }
     
     @JsType(isNative = true)
@@ -135,6 +164,14 @@ public interface GrapesJS {
     interface EventHandler {
         
         void handle(Model model);
+        
+    }
+    
+    @JsFunction
+    @FunctionalInterface
+    interface ElementTypeTester {
+        
+        TypeDescriptor handle(Element element);
         
     }
     

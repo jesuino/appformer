@@ -16,17 +16,24 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.widget;
 
+import java.util.Arrays;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.ext.page.builder.api.model.PageModel;
+import org.uberfire.ext.page.builder.client.grapesjs.components.CustomComponentsRegister;
+
+import com.google.gwt.core.client.Scheduler;
 
 import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLStyleElement;
+import elemental2.dom.Node;
 
 @Templated
 @Dependent
@@ -39,6 +46,9 @@ public class GrapesJSPageDisplayerViewImpl implements GrapesJSPageDisplayer.View
     @Inject
     @DataField
     public HTMLDivElement grapesJSPageContainer;
+    
+    @Inject
+    CustomComponentsRegister customComponentsRegister;
 
     private GrapesJSPageDisplayer presenter;
 
@@ -56,11 +66,28 @@ public class GrapesJSPageDisplayerViewImpl implements GrapesJSPageDisplayer.View
 
     @Override
     public void displayContent(PageModel pageModel) {
+        if (DomGlobal.document.body.contains(style)) {
+            DomGlobal.document.body.removeChild(style);
+        }
         style = (HTMLStyleElement) DomGlobal.document.createElement("style");
         style.type = "text/css";
         style.innerHTML = pageModel.getCss();
         DomGlobal.document.body.appendChild(style);
         grapesJSPageContainer.innerHTML = pageModel.getHtml();
+        
+        Scheduler.get().scheduleDeferred(() -> {
+            if (! grapesJSPageContainer.hasChildNodes()) {
+                DomGlobal.console.log("No Child nodes on container!");
+                return;
+            }
+            for (int i = 0; i < grapesJSPageContainer.childNodes.length; i++) {
+                Element el = (Element)  grapesJSPageContainer.childNodes.getAt(i);
+                String type = el.getAttribute("data-appformer-type");
+                if (type != null && ! type.trim().isEmpty()) {
+                    customComponentsRegister.get(type).ifPresent(customComponent -> customComponent.build(el));
+                }
+            }
+        });
     }
 
     @Override

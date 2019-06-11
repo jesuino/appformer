@@ -17,30 +17,32 @@
 package org.uberfire.ext.page.builder.client.grapesjs.components.appformerjsscreen;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
-import org.jboss.errai.common.client.ui.ElementWrapperWidget;
-import org.jboss.errai.ui.client.local.producer.Elemental2HTMLElementProvider;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.page.builder.client.grapesjs.components.ComponentBlock;
-import org.uberfire.ext.page.builder.client.grapesjs.components.ComponentType;
 import org.uberfire.ext.page.builder.client.grapesjs.components.CustomComponent;
 import org.uberfire.ext.page.builder.client.grapesjs.js.Block;
 import org.uberfire.ext.page.builder.client.grapesjs.js.BlockAttributes;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.ElementTypeTester;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Model;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.ModelTypeRecognizer;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Type;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.TypeDescriptor;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSUtil;
 import org.uberfire.ext.page.builder.client.grapesjs.js.ModelDefaultProperties;
 import org.uberfire.ext.page.builder.client.grapesjs.js.Trait;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
 import jsinterop.base.Js;
 
@@ -52,21 +54,30 @@ public class AppformerScreenComponent implements CustomComponent {
     
     private static final String PARAM_SCREEN_ID = "screen-id";
     
+    Map<String, PlaceRequest> placesRequest = new HashMap<>();
+    
+    
     @Inject
     private PlaceManager placeManager;
 
-    private static final String BLOCK_CONTENT = "<div data-gjs-type=\""+TYPE_ID+"\" data-appformerscreen>YOUR SCREEN HERE</div>";
+    private static final String BLOCK_CONTENT = "<div data-gjs-type=\""+TYPE_ID+"\" data-appformer-type=\""+TYPE_ID+"\">YOUR SCREEN HERE</div>";
 
     @Override
-    public ComponentType getType(Type defaultType) {
+    public Type getType(Type defaultType) {
         Trait[] traits = {
                 Trait.create("text", "Screen Id", PARAM_SCREEN_ID)
         };
         ModelDefaultProperties model = ModelDefaultProperties.create("div", traits);
         Model defaultModel = defaultType.getModel();
-        Model extendedModel = GrapesJSUtil.buildExtendedModel(defaultModel, model);
-        Type type = Type.create(extendedModel, defaultType.getView());
-        return new ComponentType(TYPE_ID, type);
+        ElementTypeTester tester = el -> {
+            if (TYPE_ID.equals(el.getAttribute("data-appformer-type"))) {
+                return TypeDescriptor.create(TYPE_ID);
+            }
+            return null;
+        };
+        ModelTypeRecognizer recognizer = ModelTypeRecognizer.create(tester);
+        Model extendedModel = GrapesJSUtil.buildExtendedModel(defaultModel, model, recognizer);
+        return Type.create(extendedModel, defaultType.getView());
     }
 
     @Override
@@ -83,12 +94,29 @@ public class AppformerScreenComponent implements CustomComponent {
     }
     
     @Override
-    public Element buildPreview(Element parent, Map<String, String> data) {
-        String screenId = data.get(PARAM_SCREEN_ID);
-        PlaceRequest screenPlaceRequest = new DefaultPlaceRequest(screenId);
-        HTMLElement erraiEl = Js.cast(parent);
-        placeManager.goTo(screenPlaceRequest, erraiEl);
-        return CustomComponent.super.buildPreview(parent, data);
+    public void build(Element parent) {
+        String screenId = parent.getAttribute("data-" + PARAM_SCREEN_ID);
+        if (screenId != null && ! screenId.trim().isEmpty()) {
+            parent.innerHTML = "";
+            PlaceRequest screenPlaceRequest = placeRequestForScreen(screenId);
+            HTMLElement erraiEl = Js.cast(parent);
+            placeManager.tryClosePlace(screenPlaceRequest, () -> DomGlobal.console.log("Attempt to close place before opening again"));
+            placeManager.goTo(screenPlaceRequest, erraiEl);
+        }
+    }
+
+    private PlaceRequest placeRequestForScreen(String screenId) {
+        placesRequest.computeIfAbsent(screenId, s -> {
+            Map<String, String> params = new HashMap<>();
+            params.put("requester", "GrapesJSEditor");
+            return new DefaultPlaceRequest(screenId, params);
+        });
+        return placesRequest.get(screenId);
+    }
+
+    @Override
+    public String getTypeId() {
+        return TYPE_ID;
     }
 
 }

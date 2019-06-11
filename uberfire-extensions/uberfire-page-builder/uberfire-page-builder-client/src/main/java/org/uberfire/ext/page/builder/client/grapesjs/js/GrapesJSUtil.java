@@ -31,11 +31,13 @@ public class GrapesJSUtil {
             });
     }-*/;
     
-    public static native GrapesJS.Model buildExtendedModel(GrapesJS.Model defaultModel, ModelDefaultProperties baseModel) /*-{
+    public static native GrapesJS.Model buildExtendedModel(GrapesJS.Model defaultModel, 
+                                                           ModelDefaultProperties baseModel,
+                                                           GrapesJS.ModelTypeRecognizer recognizer) /*-{
         return defaultModel.extend({
             // Extend default properties
             defaults: Object.assign({}, defaultModel.prototype.defaults, baseModel),
-        });
+        }, recognizer);
     }-*/;
     
 }
