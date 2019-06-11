@@ -16,6 +16,9 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.js;
 
+import elemental2.core.JsObject;
+import elemental2.dom.Element;
+import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -87,6 +90,60 @@ public interface GrapesJS {
         
         @JsMethod
         Model extend(ModelDefaultProperties other);
+        
+        @JsProperty
+        ModelAttributes getAttributes();
+        
+        @JsMethod
+        Element getEl();
+
+        @JsMethod
+        void addAttributes(JsObject attrs);
+
+        void append(Element previewElement);
+    }
+    
+    @JsType(isNative = true)
+    interface ModelAttributes {
+        
+        @JsProperty
+        String getType();
+    }
+    
+    @JsType(isNative = true)
+    interface Modal {
+        
+        @JsMethod
+        void close();
+        
+        @JsMethod
+        void setTitle(String title);
+        
+        @JsMethod
+        void open();
+
+        @JsMethod
+        void setContent(Element innerHTML);
+        
+        @JsMethod
+        void onceClose(ModelCloseListener listener);
+        
+    }
+    
+    @JsFunction
+    @FunctionalInterface
+    interface EventHandler {
+        
+        void handle(Model model);
+        
+    }
+    
+    @JsFunction
+    @FunctionalInterface
+    interface ModelCloseListener {
+        
+        void handle(Object object);
+        
     }
     
     @JsType(isNative = true)
@@ -104,12 +161,17 @@ public interface GrapesJS {
         @JsMethod
         void setComponents(String html);
         
+        @JsProperty(name="Modal")
+        Modal getModal();
+
         @JsProperty(name="DomComponents")
         DomComponents getDomComponents();
         
         @JsProperty(name="BlockManager")
-        BlockManager getBlockManager();        
+        BlockManager getBlockManager();
         
+        @JsMethod
+        void on(String event, EventHandler handler);
     }
 
 }

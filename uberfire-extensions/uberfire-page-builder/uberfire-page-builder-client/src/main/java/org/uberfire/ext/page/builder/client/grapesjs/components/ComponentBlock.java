@@ -30,8 +30,6 @@ public class ComponentBlock {
         this.name = name;
         this.block = block;
     }
-
-
     public String getName() {
         return name;
     }
@@ -44,6 +42,5 @@ public class ComponentBlock {
     public void setBlock(Block block) {
         this.block = block;
     }
-    
     
 }

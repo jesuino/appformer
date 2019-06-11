@@ -16,12 +16,23 @@
 
 package org.uberfire.ext.page.builder.client.grapesjs.components;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.uberfire.ext.page.builder.client.grapesjs.components.configuration.ComponentConfigurationPresenter;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Modal;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Type;
+
+import elemental2.core.JsObject;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
+import jsinterop.base.Any;
+import jsinterop.base.Js;
 
 /**
  * TODO This could be done using grapesjs plugins
@@ -32,14 +43,40 @@ public class CustomComponentsLoader {
     @Inject
     SyncBeanManager beanManager;
     
+    @Inject
+    ComponentConfigurationPresenter componentConfigurationPresenter;
+    
     public void applyPlugins(GrapesJS.Editor editor) {
+        componentConfigurationPresenter.closeListener(editor.getModal()::close);
         beanManager.lookupBeans(CustomComponent.class).forEach(i -> {
             Type defaultType = editor.getDomComponents().getType("default");
             CustomComponent customComponent = i.getInstance();
             ComponentType type = customComponent.getType(defaultType);
             ComponentBlock block = customComponent.getBlock();
+            List<String> props = customComponent.getComponentProperties();
             editor.getDomComponents().addType(type.getTypeId(), type.getType());
             editor.getBlockManager().add(block.getName(), block.getBlock());
+            if (!props.isEmpty()) {
+                editor.on("component:create", model -> {
+                    if (model.getAttributes().getType().equals(type.getTypeId())) {
+                        Modal modal = editor.getModal();
+                        Element element = componentConfigurationPresenter.getViewContent(props);
+                        modal.setContent(element);
+                        modal.open();
+                        modal.setTitle("Properties for " + block.block.getLabel());
+                        modal.onceClose(e -> {
+                            DomGlobal.console.log(model);
+                            Map<String, String> allProps = componentConfigurationPresenter.allProperties();
+                            allProps.forEach((prop, val) -> {
+                                JsObject attrs = JsObject.create(null);
+                                Js.<Any>cast(attrs).asPropertyMap().set("data-" + prop, val);
+                                model.addAttributes(attrs);
+                            });
+                            model.append(customComponent.buildPreview(model.getEl(), allProps));
+                        });
+                    }
+                });
+            }
         });
     }
 

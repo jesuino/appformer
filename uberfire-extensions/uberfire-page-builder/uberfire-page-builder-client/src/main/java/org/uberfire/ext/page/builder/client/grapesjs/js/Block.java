@@ -38,6 +38,9 @@ public class Block {
     public native void setLabel(String label); 
     
     @JsProperty
+    public native String getLabel();
+
+    @JsProperty
     public native void setCategory(String category);
     
     @JsProperty
@@ -45,5 +48,6 @@ public class Block {
     
     @JsProperty
     public native void setAttributes(BlockAttributes attributes);
+
     
 }

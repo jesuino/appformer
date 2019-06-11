@@ -25,8 +25,8 @@
 
 
   <properties>
-    <version.org.grapesjs>0.14.50</version.org.grapesjs>
-    <version.org.grapesjs.preset.webpage>0.1.10</version.org.grapesjs.preset.webpage>
+    <version.org.grapesjs>0.14.62</version.org.grapesjs>
+    <version.org.grapesjs.preset.webpage>0.1.11</version.org.grapesjs.preset.webpage>
 
   </properties>
 
@@ -102,6 +102,10 @@
       <artifactId>elemental2-dom</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.elemental2</groupId>
+      <artifactId>elemental2-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.jsinterop</groupId>
       <artifactId>base</artifactId>
     </dependency>
@@ -109,7 +113,6 @@
       <groupId>com.google.jsinterop</groupId>
       <artifactId>jsinterop-annotations</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
