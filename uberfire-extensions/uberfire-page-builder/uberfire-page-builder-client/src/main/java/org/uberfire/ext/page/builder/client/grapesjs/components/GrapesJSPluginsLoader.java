@@ -59,7 +59,12 @@ public class GrapesJSPluginsLoader {
             editor.getDomComponents().addType(customComponent.getTypeId(), type);
             editor.getBlockManager().add(block.getName(), block.getBlock());
         });
-        
+        editor.on("component:mount", model -> {
+            getCustomComponentForModel(model).ifPresent(customComponent -> customComponent.build(model.getEl()));
+        });
+    }
+
+    public void registerNewComponentsListeners(GrapesJS.Editor editor) {
         editor.on("component:add", model -> {
             getCustomComponentForModel(model).ifPresent(customComponent -> {
                 List<String> props = customComponent.getComponentProperties();
@@ -78,9 +83,6 @@ public class GrapesJSPluginsLoader {
             });
         });
         
-        editor.on("component:mount", model -> {
-            getCustomComponentForModel(model).ifPresent(customComponent -> customComponent.build(model.getEl()));
-        });
     }
 
     private Optional<CustomComponent> getCustomComponentForModel(Model model) {

@@ -124,12 +124,12 @@ public interface GrapesJS {
         @JsOverlay
         public static ModelTypeRecognizer create(ElementTypeTester tester) {
             ModelTypeRecognizer instance = new ModelTypeRecognizer();
-            instance.setIsElement(tester);
+            instance.setIsComponent(tester);
             return instance;
         }
         
         @JsProperty
-        public native void setIsElement(ElementTypeTester tester);
+        public native void setIsComponent(ElementTypeTester tester);
     }
     
     @JsType(isNative = true)

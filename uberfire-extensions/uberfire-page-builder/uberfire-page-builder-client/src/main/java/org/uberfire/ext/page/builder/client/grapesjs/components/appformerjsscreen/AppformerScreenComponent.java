@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -70,7 +69,8 @@ public class AppformerScreenComponent implements CustomComponent {
         ModelDefaultProperties model = ModelDefaultProperties.create("div", traits);
         Model defaultModel = defaultType.getModel();
         ElementTypeTester tester = el -> {
-            if (TYPE_ID.equals(el.getAttribute("data-appformer-type"))) {
+            if (el instanceof elemental2.dom.HTMLElement && 
+                TYPE_ID.equals(el.getAttribute("data-appformer-type"))) {
                 return TypeDescriptor.create(TYPE_ID);
             }
             return null;

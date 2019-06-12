@@ -76,10 +76,11 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
     public void loadEditor(PageModel pageModel) {
         GrapesJSConfig conf = GrapesJSConfig.create(grapesJSContainer, PLUGINS);
         editor = GrapesJS.Builder.get().init(conf);
-        editor.setComponents(pageModel.getHtml());
-        editor.setStyle(pageModel.getCss());
         GrapesJSUtil.addCssClassPrefix(editor, "appformer-page-");
         customComponentsLoader.applyPlugins(editor);
+        editor.setComponents(pageModel.getHtml());
+        editor.setStyle(pageModel.getCss());
+        customComponentsLoader.registerNewComponentsListeners(editor);
     }
     
     @EventHandler("btnSave")
