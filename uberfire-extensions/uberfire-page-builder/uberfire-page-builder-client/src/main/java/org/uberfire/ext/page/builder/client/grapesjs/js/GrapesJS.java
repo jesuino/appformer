@@ -18,6 +18,7 @@ package org.uberfire.ext.page.builder.client.grapesjs.js;
 
 import elemental2.core.JsObject;
 import elemental2.dom.Element;
+import elemental2.dom.HTMLIFrameElement;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsOverlay;
@@ -53,6 +54,13 @@ public interface GrapesJS {
         
         @JsMethod
         Type add(String id, Block block);
+    }
+    
+    @JsType(isNative = true)
+    interface Canvas {
+        
+        @JsMethod
+        HTMLIFrameElement getFrameEl();
     }
     
     @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
@@ -207,8 +215,13 @@ public interface GrapesJS {
         @JsProperty(name="BlockManager")
         BlockManager getBlockManager();
         
+        @JsProperty(name="Canvas")
+        Canvas getCanvas();
+        
         @JsMethod
         void on(String event, EventHandler handler);
+        
+        
     }
 
 }

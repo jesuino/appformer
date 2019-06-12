@@ -33,9 +33,13 @@ import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJSUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLIFrameElement;
+import elemental2.dom.Node;
+import elemental2.dom.NodeList;
 
 @Templated
 @Dependent
@@ -76,13 +80,14 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
     public void loadEditor(PageModel pageModel) {
         GrapesJSConfig conf = GrapesJSConfig.create(grapesJSContainer, PLUGINS);
         editor = GrapesJS.Builder.get().init(conf);
+        applyStyleToGrapesJSEditor();
         GrapesJSUtil.addCssClassPrefix(editor, "appformer-page-");
         customComponentsLoader.applyPlugins(editor);
         editor.setComponents(pageModel.getHtml());
         editor.setStyle(pageModel.getCss());
         customComponentsLoader.registerNewComponentsListeners(editor);
     }
-    
+
     @EventHandler("btnSave")
     public void saveHandler(final ClickEvent clickEvent) {
         btnSave.disabled = true;
@@ -98,6 +103,28 @@ public class GrapesJSWidgetViewImpl implements GrapesJSWidget.View, IsElement {
     public void error(String message) {
         btnSave.disabled = false;
         DomGlobal.window.alert(message);
+    }
+    
+    private void applyStyleToGrapesJSEditor() {
+        HTMLIFrameElement frameEl = editor.getCanvas().getFrameEl();
+        NodeList<Element> styleElement = DomGlobal.document.head.getElementsByTagName("style");
+        NodeList<Element> linkElements = DomGlobal.document.head.getElementsByTagName("link");
+        
+        
+        for (int i = 0; i < styleElement.length; i++) {
+            Element el = styleElement.getAt(i);
+            Node clone = el.cloneNode(true);
+            frameEl.contentDocument.head.appendChild(clone);
+        }
+        
+        for (int i = 0; i < linkElements.length; i++) {
+            Element el = linkElements.getAt(i);
+            if ("stylesheet".equals(el.getAttribute("rel"))) {
+                Node clone = el.cloneNode(true);
+                frameEl.contentDocument.head.appendChild(clone);
+            }
+        }
+        
     }
 
 }
