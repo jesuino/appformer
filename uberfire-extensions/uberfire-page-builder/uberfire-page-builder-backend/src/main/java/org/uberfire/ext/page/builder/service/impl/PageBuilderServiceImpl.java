@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jboss.errai.marshalling.server.ServerMarshalling;
 import org.uberfire.ext.page.builder.api.model.PageModel;
 import org.uberfire.ext.page.builder.api.service.PageBuilderService;
 import org.uberfire.io.IOService;
@@ -57,34 +56,43 @@ public class PageBuilderServiceImpl implements PageBuilderService {
     public static final String DEFAULT_REPOSITORY = "page_builder";
     
     public static final String LOCATION_PATH = "pages/page";
-
+    public static final String BASE_DIR = "pages/page/";
+    public static final String HTML_LOCATION = BASE_DIR + "page.html";
+    public static final String CSS_LOCATION = BASE_DIR + "page.css";
+    
     @Override
     public PageModel save(String htmlContent, String cssContent) {
-        Path pagePath = getLocationPath();
+        Path htmlPath = getLocationPath(HTML_LOCATION);
+        Path cssPath = getLocationPath(CSS_LOCATION);
         PageModel pageModel = new PageModel(htmlContent, cssContent);
-        String content = ServerMarshalling.toJSON(pageModel);
-        ioService.write(pagePath, content);
+        ioService.write(htmlPath, htmlContent);
+        ioService.write(cssPath, cssContent);
         return pageModel;
     }
 
     @Override
     public PageModel get() {
-        Path pagePath = getLocationPath();
-        String pageJSON = "";
+        String pageHtml = "";
+        String pageCss = "";
+        Path htmlPath = getLocationPath(HTML_LOCATION);
+        Path cssPath = getLocationPath(CSS_LOCATION);
         try {
-            pageJSON = ioService.readAllString(pagePath);
+            pageHtml = ioService.readAllString(htmlPath);
         } catch (NoSuchFileException e) {
-            PageModel pageModel = new PageModel();
-            pageJSON = ServerMarshalling.toJSON(pageModel);
-            ioService.write(pagePath, pageJSON);
+            ioService.write(htmlPath, pageHtml);
         }
-        return ServerMarshalling.fromJSON(pageJSON, PageModel.class);
+        try {
+            pageCss = ioService.readAllString(cssPath);
+        } catch (NoSuchFileException e) {
+            ioService.write(cssPath, pageCss);
+        }
+        return new PageModel(pageHtml, pageCss);
     }
     
-    private Path getLocationPath() {
+    private Path getLocationPath(String pathStr) {
         FileSystem fileSystem = getFileSystem();
         Path root = fileSystem.getRootDirectories().iterator().next();
-        return root.resolve(LOCATION_PATH);
+        return root.resolve(pathStr);
     }
     
     private FileSystem getFileSystem() {
