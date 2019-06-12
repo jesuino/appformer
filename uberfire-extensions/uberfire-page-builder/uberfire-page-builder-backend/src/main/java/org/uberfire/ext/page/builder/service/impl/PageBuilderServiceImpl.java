@@ -55,7 +55,6 @@ public class PageBuilderServiceImpl implements PageBuilderService {
 
     public static final String DEFAULT_REPOSITORY = "page_builder";
     
-    public static final String LOCATION_PATH = "pages/page";
     public static final String BASE_DIR = "pages/page/";
     public static final String HTML_LOCATION = BASE_DIR + "page.html";
     public static final String CSS_LOCATION = BASE_DIR + "page.css";
