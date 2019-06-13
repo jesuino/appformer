@@ -25,6 +25,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.ext.page.builder.api.model.PageModel;
 import org.uberfire.ext.page.builder.client.grapesjs.components.CustomComponentsRegister;
+import org.uberfire.ext.page.builder.client.grapesjs.components.GrapesJSPluginsLoader;
 
 import com.google.gwt.core.client.Scheduler;
 
@@ -82,7 +83,7 @@ public class GrapesJSPageDisplayerViewImpl implements GrapesJSPageDisplayer.View
             }
             for (int i = 0; i < grapesJSPageContainer.childNodes.length; i++) {
                 Element el = (Element)  grapesJSPageContainer.childNodes.getAt(i);
-                String type = el.getAttribute("data-appformer-type");
+                String type = el.getAttribute(GrapesJSPluginsLoader.PROP_APPFORMER_TYPE);
                 if (type != null && ! type.trim().isEmpty()) {
                     customComponentsRegister.get(type).ifPresent(customComponent -> customComponent.build(el));
                 }

@@ -26,12 +26,14 @@ import javax.inject.Inject;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.ext.page.builder.client.grapesjs.components.configuration.ComponentConfigurationPresenter;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS;
+import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.EventHandler;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Modal;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Model;
 import org.uberfire.ext.page.builder.client.grapesjs.js.GrapesJS.Type;
 
 import elemental2.core.JsObject;
 import elemental2.dom.Element;
+import elemental2.dom.HTMLElement;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 
@@ -40,7 +42,9 @@ import jsinterop.base.Js;
  */
 @ApplicationScoped
 public class GrapesJSPluginsLoader {
-    
+
+    public static final String PROP_APPFORMER_TYPE = "data-appformer-type";
+
     @Inject
     SyncBeanManager beanManager;
     
@@ -51,6 +55,7 @@ public class GrapesJSPluginsLoader {
     CustomComponentsRegister customComponentsRegister;
     
     public void applyPlugins(GrapesJS.Editor editor) {
+        EventHandler updateComponentHandler = model -> getCustomComponentForModel(model).ifPresent(comp -> comp.build(model.getEl()));
         componentConfigurationPresenter.closeListener(editor.getModal()::close);
         customComponentsRegister.registeredComponents().forEach(customComponent -> {
             Type baseType = editor.getDomComponents().getType("default");
@@ -59,9 +64,8 @@ public class GrapesJSPluginsLoader {
             editor.getDomComponents().addType(customComponent.getTypeId(), type);
             editor.getBlockManager().add(block.getName(), block.getBlock());
         });
-        editor.on("component:mount", model -> {
-            getCustomComponentForModel(model).ifPresent(customComponent -> customComponent.build(model.getEl()));
-        });
+        editor.on("component:mount", updateComponentHandler);
+        editor.on("component:update:attributes", updateComponentHandler);
     }
 
     public void registerNewComponentsListeners(GrapesJS.Editor editor) {
@@ -87,9 +91,11 @@ public class GrapesJSPluginsLoader {
 
     private Optional<CustomComponent> getCustomComponentForModel(Model model) {
         Element modelEl = model.getEl();
-        String componentType = modelEl.getAttribute("data-appformer-type");
-        if (componentType != null) {
-            return customComponentsRegister.get(componentType);
+        if (modelEl instanceof HTMLElement) {
+            String componentType = modelEl.getAttribute(PROP_APPFORMER_TYPE);
+            if (componentType != null) {
+                return customComponentsRegister.get(componentType);
+            }
         }
         return Optional.empty();
     }
@@ -97,7 +103,7 @@ public class GrapesJSPluginsLoader {
     private void applyPropertiesToComponent(Model model, Map<String, String> allProps) {
         allProps.forEach((prop, val) -> {
             JsObject attrs = JsObject.create(null);
-            Js.<Any>cast(attrs).asPropertyMap().set("data-" + prop, val);
+            Js.<Any>cast(attrs).asPropertyMap().set(prop, val);
             model.addAttributes(attrs);
         });
     }
