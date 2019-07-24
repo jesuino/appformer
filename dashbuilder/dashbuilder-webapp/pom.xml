@@ -177,6 +177,11 @@
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-data-transfer-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-navigation-client</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -732,6 +737,7 @@
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-navigation-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-navigation-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-cms-client</compileSourcesArtifact>
+            <compileSourcesArtifact>dashbuilder-data-transfer-client</compileSourcesArtifact>
 
             <!-- Uberfire ext -->
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-api</compileSourcesArtifact>

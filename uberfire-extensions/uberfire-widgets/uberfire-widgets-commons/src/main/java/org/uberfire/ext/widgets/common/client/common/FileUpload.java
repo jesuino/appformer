@@ -94,6 +94,13 @@ public class FileUpload
             uploadButton = null;
         }
     }
+    
+    public void removeUploadButton() {
+    	if (uploadButton != null) {
+    		uploadButton.removeFromParent();
+            uploadButton = null;
+    	}
+    }
 
     public void setName(final String name) {
         file.setName(name);

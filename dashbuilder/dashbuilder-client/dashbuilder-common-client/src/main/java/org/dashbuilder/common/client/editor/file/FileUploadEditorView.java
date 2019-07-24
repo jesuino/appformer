@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import org.dashbuilder.common.client.editor.file.FileUploadEditor.View;
 import org.gwtbootstrap3.client.ui.Tooltip;
 import org.gwtbootstrap3.client.ui.constants.Placement;
 import org.uberfire.ext.widgets.common.client.common.FileUpload;
@@ -99,6 +101,11 @@ public class FileUploadEditorView extends Composite implements FileUploadEditor.
         });
     }
 
+    public FileUploadEditor.View removeUploadButton() {
+    	fileUpload.removeUploadButton();
+    	return this;
+    }
+
     @Override
     public FileUploadEditor.View addHelpContent(final String title, final String content, final Placement placement) {
         final Tooltip tooltip = new Tooltip(fileUpload);
@@ -170,4 +177,10 @@ public class FileUploadEditorView extends Composite implements FileUploadEditor.
         errorTooltip.setTitle("");
         return this;
     }
+
+	@Override
+	public View upload() {
+		fileUpload.upload();
+		return this;
+	}
 }

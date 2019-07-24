@@ -89,17 +89,18 @@ public class SystemConfigProducer implements Extension {
     private boolean perspectivesFSNotExists = true;
     private boolean datasetsFSNotExists = true;
     private boolean navigationFSNotExists = true;
+    private boolean dataTransferFSNotExists = true;
     private boolean ioStrategyBeanNotFound = true;
 
     public void processSystemFSProducer(@Observes ProcessProducer<?, FileSystem> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("systemFS")) {
-            ioStrategyBeanNotFound = false;
+            systemFSNotExists = false;
         }
     }
 
     public void processPluginsFSProducer(@Observes ProcessProducer<?, FileSystem> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("pluginsFS")) {
-            ioStrategyBeanNotFound = false;
+            pluginsFSNotExists = false;
         }
     }
 
@@ -120,6 +121,13 @@ public class SystemConfigProducer implements Extension {
             navigationFSNotExists = false;
         }
     }
+
+    public void processDataTransferFSProducer(@Observes ProcessProducer<?, FileSystem> pp) {
+        if (pp.getAnnotatedMember().getJavaMember().getName().equals("dataTransferFS")) {
+            dataTransferFSNotExists = false;
+        }
+    }
+
     public void processIOServiceProducer(@Observes ProcessProducer<?, IOService> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("ioStrategy")) {
             ioStrategyBeanNotFound = false;
@@ -137,6 +145,8 @@ public class SystemConfigProducer implements Extension {
             datasetsFSNotExists = false;
         } else if (event.getBean().getName() != null && event.getBean().getName().equals("navigationFS")) {
             navigationFSNotExists = false;
+        } else if (event.getBean().getName() != null && event.getBean().getName().equals("dataTransferFS")) {
+            dataTransferFSNotExists = false;
         } else if (event.getBean().getName() != null && event.getBean().getName().equals("ioStrategy")) {
             ioStrategyBeanNotFound = false;
         }
@@ -227,6 +237,11 @@ public class SystemConfigProducer implements Extension {
                               bm);
         }
 
+        if (dataTransferFSNotExists) {
+            buildDataTransferFS(abd,
+                              bm);
+        }
+
         if (pluginsFSNotExists) {
             buildPluginsFS(abd,
                            bm);
@@ -286,6 +301,19 @@ public class SystemConfigProducer implements Extension {
                                          "navigationFS",
                                          "navigation"));
     }
+
+    void buildDataTransferFS(final AfterBeanDiscovery abd,
+                           final BeanManager bm) {
+        final InjectionTarget<DummyFileSystem> it = bm.createInjectionTarget(bm.createAnnotatedType(DummyFileSystem.class));
+
+        abd.addBean(createFileSystemBean(bm,
+                                         it,
+                                         SpacesAPI.DASHBUILDER_SPACE,
+                                         "ioStrategy",
+                                         "dataTransferFS",
+                                         "dataTransfer"));
+    }
+
     void buildSystemFS(final AfterBeanDiscovery abd,
                        final BeanManager bm) {
         final InjectionTarget<DummyFileSystem> it = bm.createInjectionTarget(bm.createAnnotatedType(DummyFileSystem.class));

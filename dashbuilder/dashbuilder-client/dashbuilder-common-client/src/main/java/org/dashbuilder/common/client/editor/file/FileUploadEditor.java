@@ -58,6 +58,10 @@ public class FileUploadEditor implements IsWidget, LeafAttributeEditor<String> {
 
         View clearError();
         
+        View removeUploadButton();
+        
+        View upload();
+        
     }
 
     public interface FileUploadEditorCallback {
