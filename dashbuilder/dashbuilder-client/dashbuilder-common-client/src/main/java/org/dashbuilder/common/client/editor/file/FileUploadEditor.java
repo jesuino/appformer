@@ -47,17 +47,18 @@ public class FileUploadEditor implements IsWidget, LeafAttributeEditor<String> {
         View setFileLabelVisible(boolean visible);
 
         View setLoadingImageVisible(boolean visible);
-        
+
         String getFileName();
-        
+
         View setFormAction(String action);
-        
+
         View submit();
 
         View showError(final SafeHtml message);
 
         View clearError();
-        
+
+        View upload();
     }
 
     public interface FileUploadEditorCallback {
@@ -70,7 +71,7 @@ public class FileUploadEditor implements IsWidget, LeafAttributeEditor<String> {
     Event<NotificationEvent> workbenchNotification;
     Event<org.dashbuilder.common.client.event.ValueChangeEvent<String>> valueChangeEvent;
     public View view;
-    
+
     String value;
     FileUploadEditorCallback callback;
     
