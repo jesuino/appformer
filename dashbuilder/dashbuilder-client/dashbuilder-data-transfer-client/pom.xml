@@ -36,7 +36,21 @@
     <dependency>
         <groupId>org.dashbuilder</groupId>
         <artifactId>dashbuilder-services-api</artifactId>
-    </dependency>    
+    </dependency>
+    
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-testing-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+
   </dependencies>
 
   <build>

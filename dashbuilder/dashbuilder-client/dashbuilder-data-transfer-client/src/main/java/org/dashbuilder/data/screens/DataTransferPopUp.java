@@ -27,7 +27,7 @@ import org.uberfire.client.mvp.UberElemental;
 @ApplicationScoped
 public class DataTransferPopUp {
 
-	private DataTransferPopUpView view;
+	private View view;
 
 	public DataTransferPopUp() {
 
@@ -35,7 +35,7 @@ public class DataTransferPopUp {
 
 	@Inject
 	public DataTransferPopUp(
-			final DataTransferPopUpView view) {
+			final View view) {
 
 		this.view = view;
 	}
@@ -51,5 +51,8 @@ public class DataTransferPopUp {
 
 	public interface View extends UberElemental<DataTransferPopUp> {
 
+	    void show(List<String> filesImported);
+
 	}
+
 }

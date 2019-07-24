@@ -87,6 +87,7 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
 		return root;
 	}
 
+	@Override
     public void show(List<String> filesImported) {
     	modal.setTitle(i18n.dataTransferPopUpViewTitle());
     	elem2Dom.removeAllElementChildren(filesImportedList);
