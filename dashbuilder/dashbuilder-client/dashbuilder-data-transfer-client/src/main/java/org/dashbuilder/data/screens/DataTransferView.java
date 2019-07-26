@@ -17,6 +17,7 @@
 package org.dashbuilder.data.screens;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,6 +30,7 @@ import elemental2.dom.HTMLElement;
 import org.dashbuilder.common.client.backend.PathUrlFactory;
 import org.dashbuilder.common.client.editor.file.FileUploadEditor;
 import org.dashbuilder.common.client.editor.file.FileUploadEditor.FileUploadEditorCallback;
+import org.dashbuilder.common.client.event.ValueChangeEvent;
 import org.dashbuilder.data.resources.i18n.DataTransferConstants;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
@@ -82,9 +84,11 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
     @Override
     public void init(DataTransferScreen presenter) {
         this.presenter = presenter;
-
+        
+        btnImport.disabled = true;
+        
         elem2Dom.appendWidgetToElement(fileUploadContainer, fileUploadEditor.asWidget());
-
+        
         fileUploadEditor.configure("fileUpload", new FileUploadEditorCallback() {
 			@Override
 			public String getUploadFileUrl() {	
@@ -130,6 +134,7 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
 
 	@Override
 	public void importError(Throwable throwable) {
+	    btnImport.disabled = true;
 		LOGGER.error(throwable.getMessage(), throwable);
 		workbenchNotification.fire(
 				new NotificationEvent(
@@ -139,6 +144,7 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
 
 	@Override
 	public void importOK() {
+	    btnImport.disabled = true;
 		workbenchNotification.fire(
 				new NotificationEvent(
 						i18n.importOK(),
@@ -161,5 +167,11 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
     @EventHandler("btnExport")
     public void onExport(ClickEvent event) {
     	presenter.doExport();
+    }
+    
+    void newFileUploaded(@Observes ValueChangeEvent<String> valueChangeEvent) {
+        if (valueChangeEvent.getContext() == fileUploadEditor) {
+            btnImport.disabled = false;
+        }
     }
 }
