@@ -213,13 +213,21 @@ public class DisplayerSettingsEditor implements IsWidget {
 
                 @Override
                 public boolean onError(final ClientRuntimeError error) {
+<<<<<<< HEAD
                     console(error.getThrowable());
+=======
+                    DomGlobal.console.error(error);
+>>>>>>> Create Dashbuilder Runtime
                     view.error(error.getMessage());
                     return false;
                 }
             });
         } catch (Exception e) {
+<<<<<<< HEAD
             console(e);
+=======
+            DomGlobal.console.error(e);
+>>>>>>> Create Dashbuilder Runtime
             view.error(e.toString());
         }
     }
