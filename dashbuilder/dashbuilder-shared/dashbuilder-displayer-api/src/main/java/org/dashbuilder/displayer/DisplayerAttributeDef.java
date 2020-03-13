@@ -93,7 +93,16 @@ public class DisplayerAttributeDef {
     public static final DisplayerAttributeDef HTML_TEMPLATE = new DisplayerAttributeDef("html", DisplayerAttributeGroupDef.HTML_GROUP);
     public static final DisplayerAttributeDef JS_TEMPLATE = new DisplayerAttributeDef("javascript", DisplayerAttributeGroupDef.HTML_GROUP);
     
+ // animation
+    public static final DisplayerAttributeDef ANIMATION_ENABLED = new DisplayerAttributeDef("animation_enabled", DisplayerAttributeGroupDef.ANIMATION_GROUP);
+    public static final DisplayerAttributeDef AUTO_START = new DisplayerAttributeDef("auto_start", DisplayerAttributeGroupDef.ANIMATION_GROUP);
+    public static final DisplayerAttributeDef DELAY = new DisplayerAttributeDef("delay", DisplayerAttributeGroupDef.ANIMATION_GROUP);
+    public static final DisplayerAttributeDef TRANSITION_DURATION = new DisplayerAttributeDef("transition_duration", DisplayerAttributeGroupDef.ANIMATION_GROUP);
+    public static final DisplayerAttributeDef ANIMATION_TARGET = new DisplayerAttributeDef("animation_target", DisplayerAttributeGroupDef.ANIMATION_GROUP);
+    
     public static final DisplayerAttributeDef MAP_COLOR_SCHEME = new DisplayerAttributeDef("color_scheme", DisplayerAttributeGroupDef.MAP_GROUP);
+    
+    
 
     protected String id;
     protected DisplayerAttributeGroupDef parent;

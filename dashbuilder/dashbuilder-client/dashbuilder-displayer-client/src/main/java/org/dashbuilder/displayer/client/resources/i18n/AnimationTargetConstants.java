@@ -18,16 +18,14 @@ package org.dashbuilder.displayer.client.resources.i18n;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 
-public interface MapColorSchemeConstants extends ConstantsWithLookup {
+public interface AnimationTargetConstants extends ConstantsWithLookup {
 
-    public static final MapColorSchemeConstants INSTANCE = GWT.create(MapColorSchemeConstants.class);
+    public static final AnimationTargetConstants INSTANCE = GWT.create(AnimationTargetConstants.class);
 
-    // MapColorScheme enum literals
+    // AnimationTarget enum literals
 
-    String COLOR_SCHEME_RED();
+    String ANIMATION_TARGET_SERIES();
 
-    String COLOR_SCHEME_BLUE();
-
-    String COLOR_SCHEME_GREEN();
+    String ANIMATION_TARGET_VALUES();
 
 }

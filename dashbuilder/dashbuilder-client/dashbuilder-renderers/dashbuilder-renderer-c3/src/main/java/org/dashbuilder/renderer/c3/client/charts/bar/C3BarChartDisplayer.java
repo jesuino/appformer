@@ -92,7 +92,8 @@ public class C3BarChartDisplayer extends C3XYDisplayer<C3BarChartDisplayer.View>
 
         return new CommonC3DisplayerConstants(lookupConstraints).create()
                         .supportsAttribute(DisplayerAttributeDef.SUBTYPE)
-                        .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);
+                        .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP)
+                        .supportsAttribute(DisplayerAttributeGroupDef.ANIMATION_GROUP);
     }
     
     

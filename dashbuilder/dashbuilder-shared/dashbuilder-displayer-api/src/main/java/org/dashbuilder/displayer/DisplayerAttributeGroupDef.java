@@ -45,6 +45,8 @@ public class DisplayerAttributeGroupDef extends DisplayerAttributeDef {
 
     public static final DisplayerAttributeGroupDef EXPORT_GROUP = new DisplayerAttributeGroupDef( "export" );
     
+    public static final DisplayerAttributeGroupDef ANIMATION_GROUP = new DisplayerAttributeGroupDef( "animation" );
+    
     public static final DisplayerAttributeGroupDef MAP_GROUP = new DisplayerAttributeGroupDef( "map" );
 
 
@@ -63,6 +65,7 @@ public class DisplayerAttributeGroupDef extends DisplayerAttributeDef {
 
     public static final DisplayerAttributeGroupDef YAXIS_GROUP =
             new DisplayerAttributeGroupDef( "y", DisplayerAttributeGroupDef.AXIS_GROUP );
+
 
     private Set<DisplayerAttributeDef> children = new HashSet<DisplayerAttributeDef>();
 

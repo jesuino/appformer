@@ -17,6 +17,7 @@ package org.dashbuilder.renderer.c3.client.jsbinding;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.dashbuilder.renderer.c3.client.DataGenerator;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point.RadiusCallback;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick.FormatterCallback;
 
@@ -89,8 +90,9 @@ public class C3JsTypesFactory {
                                    C3Point point, 
                                    C3Padding padding, 
                                    C3Legend legend,
-                                   C3Color color) {
-        return C3ChartConf.create(size, data, axis, grid, transition, point, padding, legend, color);
+                                   C3Color color,
+                                   DataGenerator dataGenerator) {
+        return C3ChartConf.create(size, data, axis, grid, transition, point, padding, legend, color, dataGenerator);
     }
 
     public C3Transition c3Transition(int duration) {
@@ -124,6 +126,10 @@ public class C3JsTypesFactory {
     public C3Tooltip c3Tooltip(C3Format.FormatCallback callback) {
         C3Format format = C3Format.create(callback);
         return C3Tooltip.create(format);
-    }    
+    }
+    
+    public C3LoadData c3LoadData(String[][] data) {
+        return C3LoadData.create(data);
+    }
 
 }

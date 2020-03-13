@@ -19,11 +19,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.dashbuilder.displayer.MapColorScheme;
 import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
 
 public class D3MapConf {
-
+    
     private String title;
     private Map<String, Double> data;
     private boolean markers;
@@ -32,17 +31,10 @@ public class D3MapConf {
     private CountriesGeoJsonService countriesGeoJsonService;
     private Function<Double, String> formatter;
     private Consumer<String> pathClickHandler;
-    private MapColorScheme colorScheme;
-
-    public D3MapConf(String title,
-                     Map<String, Double> data,
-                     boolean markers,
-                     boolean regions,
-                     String backgroundColor,
-                     CountriesGeoJsonService countriesGeoJsonService,
-                     Function<Double, String> formatter,
-                     Consumer<String> pathClickHandler,
-                     MapColorScheme colorScheme) {
+    
+    
+    public D3MapConf(String title, Map<String, Double> data, boolean markers, boolean regions, String backgroundColor,
+                                  CountriesGeoJsonService countriesGeoJsonService, Function<Double, String> formatter,  Consumer<String> pathClickHandler) {
         this.title = title;
         this.data = data;
         this.markers = markers;
@@ -51,27 +43,17 @@ public class D3MapConf {
         this.formatter = formatter;
         this.countriesGeoJsonService = countriesGeoJsonService;
         this.pathClickHandler = pathClickHandler;
-        this.colorScheme = colorScheme;
     }
 
-    public static D3MapConf of(String title,
-                               Map<String, Double> data,
-                               boolean markers,
-                               boolean regions,
-                               String backgroundColor,
-                               CountriesGeoJsonService countriesGeoJsonService,
-                               Function<Double, String> formatter,
-                               Consumer<String> pathClickHandler,
-                               MapColorScheme colorScheme) {
-        return new D3MapConf(title,
-                             data,
-                             markers,
-                             regions,
-                             backgroundColor,
-                             countriesGeoJsonService,
-                             formatter,
-                             pathClickHandler,
-                             colorScheme);
+    public static D3MapConf of(String title, 
+                              Map<String, Double> data, 
+                              boolean markers, 
+                              boolean regions,
+                              String backgroundColor,
+                              CountriesGeoJsonService countriesGeoJsonService,
+                              Function<Double, String> formatter,
+                              Consumer<String> pathClickHandler) {
+        return new D3MapConf(title, data, markers, regions, backgroundColor, countriesGeoJsonService, formatter, pathClickHandler);
     }
 
     public boolean isMarkers() {
@@ -105,8 +87,5 @@ public class D3MapConf {
     public Consumer<String> getPathClickHandler() {
         return pathClickHandler;
     }
-
-    public MapColorScheme getColorScheme() {
-        return colorScheme;
-    }
+    
 }

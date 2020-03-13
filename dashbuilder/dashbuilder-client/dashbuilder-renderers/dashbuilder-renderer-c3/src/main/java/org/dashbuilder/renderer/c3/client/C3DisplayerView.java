@@ -15,17 +15,17 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
-import org.dashbuilder.renderer.c3.client.jsbinding.C3;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3Chart;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
-import org.dashbuilder.renderer.c3.client.resources.i18n.C3DisplayerConstants;
-import org.dashbuilder.renderer.c3.mutationobserver.MutationObserverFactory;
-
 import elemental2.dom.DomGlobal;
 import elemental2.dom.MutationObserver;
 import elemental2.dom.MutationObserverInit;
 import elemental2.dom.Node;
 import jsinterop.base.Js;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Chart;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3LoadData;
+import org.dashbuilder.renderer.c3.client.resources.i18n.C3DisplayerConstants;
+import org.dashbuilder.renderer.c3.mutationobserver.MutationObserverFactory;
 
 public abstract class C3DisplayerView<P extends C3Displayer> 
         extends C3AbstractDisplayerView<P> 
@@ -40,9 +40,17 @@ public abstract class C3DisplayerView<P extends C3Displayer>
 
     @Override
     public void updateChart(C3ChartConf conf) {
+        DataGenerator dataGenerator = conf.getDataGenerator();
         displayerPanel.clear();
         conf.setBindto(displayerPanel.getElement());
         chart = C3.generate(conf);
+        dataGenerator.isAutoStart();
+        if (dataGenerator.isAutoStart()) {
+            dataGenerator.start(data -> chart.load(C3LoadData.create(data)));
+        } else {
+            chart.load(C3LoadData.create(dataGenerator.getAllData()));
+        }
+        
     }
     
     @Override

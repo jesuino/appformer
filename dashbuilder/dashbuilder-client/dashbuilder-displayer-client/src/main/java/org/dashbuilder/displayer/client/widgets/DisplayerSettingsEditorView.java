@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 
@@ -28,9 +31,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.displayer.AnimationTarget;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.MapColorScheme;
 import org.dashbuilder.displayer.Position;
+import org.dashbuilder.displayer.client.resources.i18n.AnimationTargetConstants;
 import org.dashbuilder.displayer.client.resources.i18n.CommonConstants;
 import org.dashbuilder.displayer.client.resources.i18n.MapColorSchemeConstants;
 import org.dashbuilder.displayer.client.resources.i18n.PositionConstants;
@@ -44,6 +49,11 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.validators.PropertyFieldValidator;
 
 import static org.uberfire.ext.properties.editor.model.PropertyEditorType.*;
+import static org.dashbuilder.displayer.DisplayerAttributeDef.ANIMATION_ENABLED;
+import static org.dashbuilder.displayer.DisplayerAttributeDef.ANIMATION_TARGET;
+import static org.dashbuilder.displayer.DisplayerAttributeDef.AUTO_START;
+import static org.dashbuilder.displayer.DisplayerAttributeDef.DELAY;
+import static org.dashbuilder.displayer.DisplayerAttributeDef.TRANSITION_DURATION;
 import static org.dashbuilder.displayer.DisplayerAttributeGroupDef.*;
 
 @Dependent
@@ -126,6 +136,13 @@ public class DisplayerSettingsEditorView extends Composite implements DisplayerS
         attrMapI18n.put(COLUMNS_GROUP, CommonConstants.INSTANCE.common_columns());
         attrMapI18n.put(MAP_GROUP, CommonConstants.INSTANCE.map_group());
         attrMapI18n.put(MAP_COLOR_SCHEME, CommonConstants.INSTANCE.color_scheme());
+        
+        attrMapI18n.put(ANIMATION_GROUP, CommonConstants.INSTANCE.animation_group());
+        attrMapI18n.put(ANIMATION_ENABLED, CommonConstants.INSTANCE.animation_enabled());
+        attrMapI18n.put(AUTO_START, CommonConstants.INSTANCE.auto_start());
+        attrMapI18n.put(DELAY, CommonConstants.INSTANCE.delay());
+        attrMapI18n.put(TRANSITION_DURATION, CommonConstants.INSTANCE.transition_duration());
+        attrMapI18n.put(ANIMATION_TARGET, CommonConstants.INSTANCE.animation_target());
 
         initWidget(uiBinder.createAndBindUi(this));
     }
@@ -263,10 +280,15 @@ public class DisplayerSettingsEditorView extends Composite implements DisplayerS
     public String getMeterValidationInvalidI18n() {
         return CommonConstants.INSTANCE.settings_validation_meter_invalid();
     }
-    
+
     @Override
     public String getMapColorSchemeI18n(MapColorScheme colorScheme) {
         return MapColorSchemeConstants.INSTANCE.getString("COLOR_SCHEME_" + colorScheme.toString());
+    }
+    
+    @Override
+    public String getAnimationTargetI18n(AnimationTarget animationTarget) {
+        return AnimationTargetConstants.INSTANCE.getString("ANIMATION_TARGET_" + animationTarget.toString());
     }
 
     /**

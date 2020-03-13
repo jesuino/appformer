@@ -24,6 +24,6 @@ public interface Geometry {
     @JsProperty
     public GeometryType getType();
     @JsProperty
-    public double[][][] getCoordinates();
+    public Double[] getCoordinates();
 
 }

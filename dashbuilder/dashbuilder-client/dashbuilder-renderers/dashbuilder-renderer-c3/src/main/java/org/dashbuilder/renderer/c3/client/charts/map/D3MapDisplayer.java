@@ -30,7 +30,6 @@ import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
-import org.dashbuilder.displayer.MapColorScheme;
 import org.dashbuilder.renderer.c3.client.C3AbstractDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
 
@@ -97,8 +96,7 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
                    .supportsAttribute(DisplayerAttributeDef.CHART_WIDTH)
                    .supportsAttribute(DisplayerAttributeDef.CHART_HEIGHT)
                    .supportsAttribute(DisplayerAttributeDef.CHART_BGCOLOR)
-                   .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
-                   .supportsAttribute(DisplayerAttributeGroupDef.MAP_GROUP);
+                   .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP);
     }
 
     @Override
@@ -106,8 +104,7 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
         Map<String, Double> data = retrieveData(dataSet);
         String backgroundColor = displayerSettings.getChartBackgroundColor();
         String columnName = getDataColumnName();
-        MapColorScheme colorScheme = displayerSettings.getMapColorScheme();
-        conf = D3MapConf.of(columnName, data, markers, regions, backgroundColor, geoService, this::format, this::selectLocation, colorScheme);
+        conf = D3MapConf.of(columnName, data, markers, regions, backgroundColor, geoService, this::format, this::selectLocation);
         getView().createMap(conf);
     }
 

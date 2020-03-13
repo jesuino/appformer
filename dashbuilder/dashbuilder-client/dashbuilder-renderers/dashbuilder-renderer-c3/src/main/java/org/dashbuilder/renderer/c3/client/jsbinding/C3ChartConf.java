@@ -16,29 +16,31 @@
 package org.dashbuilder.renderer.c3.client.jsbinding;
 
 import com.google.gwt.user.client.Element;
-
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import org.dashbuilder.renderer.c3.client.DataGenerator;
 
 /**
  * Bind the type that should be passed to c3.generate
  */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class C3ChartConf {  
-  
+public class C3ChartConf {
+
     @JsOverlay
-    static C3ChartConf create(C3ChartSize size, 
-                              C3ChartData data, 
+    static C3ChartConf create(C3ChartSize size,
+                              C3ChartData data,
                               C3AxisInfo axis,
                               C3Grid grid,
                               C3Transition transition,
                               C3Point point,
                               C3Padding padding,
                               C3Legend legend,
-                              C3Color color) {
+                              C3Color color,
+                              // custom object
+                              DataGenerator generator) {
         C3ChartConf instance = new C3ChartConf();
         instance.setSize(size);
         instance.setData(data);
@@ -49,12 +51,13 @@ public class C3ChartConf {
         instance.setPadding(padding);
         instance.setLegend(legend);
         instance.setColor(color);
+        instance.setDataGenerator(generator);
         return instance;
     }
-    
+
     @JsOverlay
-    static C3ChartConf create(C3ChartSize size, 
-                              C3ChartData data, 
+    static C3ChartConf create(C3ChartSize size,
+                              C3ChartData data,
                               C3AxisInfo axis,
                               C3Grid grid,
                               C3Transition transition,
@@ -62,7 +65,8 @@ public class C3ChartConf {
                               C3Padding padding,
                               C3Legend legend,
                               C3Color color,
-                              C3Tooltip tooltip) {
+                              C3Tooltip tooltip,
+                              DataGenerator generator) {
         C3ChartConf instance = new C3ChartConf();
         instance.setSize(size);
         instance.setData(data);
@@ -74,61 +78,67 @@ public class C3ChartConf {
         instance.setLegend(legend);
         instance.setColor(color);
         instance.setTooltip(tooltip);
+        instance.setDataGenerator(generator);
         return instance;
-    }    
-    
+    }
+
     @JsProperty
     public native void setBindto(Element element);
-    
+
     @JsProperty
     public native void setSize(C3ChartSize size);
-    
+
     @JsProperty
     public native void setData(C3ChartData data);
-    
+
     @JsProperty
     public native void setAxis(C3AxisInfo axis);
-    
+
     @JsProperty
     public native C3AxisInfo getAxis();
-    
+
     @JsProperty
     public native void setGrid(C3Grid grid);
-    
+
     @JsProperty
     public native void setTransition(C3Transition transition);
-    
+
     @JsProperty
     public native void setPoint(C3Point point);
-    
+
     @JsProperty
     public native void setPadding(C3Padding padding);
 
     @JsProperty
     public native void setLegend(C3Legend legend);
-    
+
     @JsProperty
-    public native void setTooltip(C3Tooltip tooltip);    
-    
+    public native void setTooltip(C3Tooltip tooltip);
+
     @JsProperty
     public native void setOnrendered(RenderedCallback callback);
-    
-    
+
     @JsFunction
     @FunctionalInterface
     public interface RenderedCallback {
-        
+
         void callback();
-    
+
     }
-    
+
     @JsProperty
-    public native void setColor(C3Color color);    
-    
+    public native void setColor(C3Color color);
+
     @JsProperty
     public native void setGauge(C3Gauge gauge);
 
     @JsProperty
     public native void setDonut(C3Donut donut);
+    
+    @JsProperty
+    public native void setDataGenerator(DataGenerator dataGenerator);
+    
+    @JsProperty
+    public native DataGenerator getDataGenerator();
 
 }

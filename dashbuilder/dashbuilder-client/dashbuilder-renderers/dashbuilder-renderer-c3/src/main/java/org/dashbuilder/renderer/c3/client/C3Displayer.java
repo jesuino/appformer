@@ -15,13 +15,16 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
-import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Random;
+import elemental2.core.JsObject;
 import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.displayer.AnimationTarget;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
@@ -41,73 +44,70 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3Padding;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
-
-import com.google.gwt.i18n.client.NumberFormat;
-
-import elemental2.core.JsObject;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Transition;
 
 public abstract class C3Displayer<V extends C3Displayer.View> extends C3AbstractDisplayer<V> {
-    
+
     private static final double DEFAULT_POINT_RADIUS = 2.5;
     protected C3JsTypesFactory factory;
-    
+
     public static final String[] COLOR_PATTERN = {
-                                    "#0088CE", "#CC0000", "#EC7A08", "#3F9C35", "#F0AB00", "#703FEC", "#007A87", "#92D400", "#35CAED",
-                                    "#00659C", "#A30000", "#B35C00", "#B58100", "#6CA100", "#2D7623", "#005C66", "#008BAD", "#40199A"};
+                                                  "#0088CE", "#CC0000", "#EC7A08", "#3F9C35", "#F0AB00", "#703FEC", "#007A87", "#92D400", "#35CAED",
+                                                  "#00659C", "#A30000", "#B35C00", "#B58100", "#6CA100", "#2D7623", "#005C66", "#008BAD", "#40199A"};
 
     public interface View<P extends C3AbstractDisplayer> extends C3AbstractDisplayer.View<P> {
 
         void updateChart(C3ChartConf conf);
-        
+
         String getType();
 
         String getGroupsTitle();
 
         String getColumnsTitle();
-        
+
         void showTitle(String title);
 
         void setFilterLabelSet(FilterLabelSet filterLabelSet);
-        
+
         void setBackgroundColor(String color);
-        
+
         void setResizable(int maxWidth, int maxHeight);
-        
+
         void setTableData(String[][] data);
 
     }
-    
+
     public C3Displayer(FilterLabelSet filterLabelSet, C3JsTypesFactory builder) {
         super(filterLabelSet);
         this.factory = builder;
     }
-    
+
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
         DataSetLookupConstraints lookupConstraints = new DataSetLookupConstraints()
-                .setGroupRequired(true)
-                .setGroupColumn(true)
-                .setMaxColumns(10)
-                .setMinColumns(2)
-                .setExtraColumnsAllowed(true)
-                .setExtraColumnsType(ColumnType.NUMBER)
-                .setColumnTypes(new ColumnType[]{
-                        ColumnType.LABEL,
-                        ColumnType.NUMBER});
+                                                                                   .setGroupRequired(true)
+                                                                                   .setGroupColumn(true)
+                                                                                   .setMaxColumns(10)
+                                                                                   .setMinColumns(2)
+                                                                                   .setExtraColumnsAllowed(true)
+                                                                                   .setExtraColumnsType(ColumnType.NUMBER)
+                                                                                   .setColumnTypes(new ColumnType[]{
+                                                                                                                    ColumnType.LABEL,
+                                                                                                                    ColumnType.NUMBER});
 
         return new DisplayerConstraints(lookupConstraints)
-                .supportsAttribute(DisplayerAttributeDef.TYPE)
-                .supportsAttribute(DisplayerAttributeDef.RENDERER)
-                .supportsAttribute(DisplayerAttributeGroupDef.COLUMNS_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.FILTER_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.REFRESH_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.GENERAL_GROUP)
-                .supportsAttribute(DisplayerAttributeDef.CHART_WIDTH)
-                .supportsAttribute(DisplayerAttributeDef.CHART_HEIGHT)
-                .supportsAttribute(DisplayerAttributeDef.CHART_BGCOLOR)
-                .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.CHART_LEGEND_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);      
+                                                          .supportsAttribute(DisplayerAttributeDef.TYPE)
+                                                          .supportsAttribute(DisplayerAttributeDef.RENDERER)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.COLUMNS_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.FILTER_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.REFRESH_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.GENERAL_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeDef.CHART_WIDTH)
+                                                          .supportsAttribute(DisplayerAttributeDef.CHART_HEIGHT)
+                                                          .supportsAttribute(DisplayerAttributeDef.CHART_BGCOLOR)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.CHART_LEGEND_GROUP)
+                                                          .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);
     }
 
     @Override
@@ -115,7 +115,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
         if (displayerSettings.isResizable()) {
             getView().setResizable(displayerSettings.getChartWidth(),
                                    displayerSettings.getChartHeight());
-        } 
+        }
 
         C3ChartConf conf = buildConfiguration();
         getView().updateChart(conf);
@@ -129,21 +129,30 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
         C3ChartData data = createData();
         C3Point point = createPoint();
         C3Padding padding = createPadding();
-        C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(), 
+        C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(),
                                            getLegendPosition());
+        C3Transition transition = factory.c3Transition((int) displayerSettings.getTransitionDuration());
         C3Color color = createColor();
         C3ChartSize size = createSize();
-        return factory.c3ChartConf(
-                    size,
-                    data,
-                    axis,
-                    factory.c3Grid(true, true),
-                    factory.c3Transition(0),
-                    point,
-                    padding, 
-                    legend,
-                    color
-                );
+        DataGenerator generator = getDataGenerator();
+        return factory.c3ChartConf(size,
+                                   data,
+                                   axis,
+                                   factory.c3Grid(true, true),
+                                   transition,
+                                   point,
+                                   padding,
+                                   legend,
+                                   color,
+                                   generator);
+    }
+
+    private DataGenerator getDataGenerator() {
+        AnimationTarget animationTarget = displayerSettings.getAnimationTarget();
+        boolean isAutoStart = displayerSettings.isAutoStart();
+        boolean isAnimated = displayerSettings.isAnimationEnabled();
+        long delay = displayerSettings.getDelay();
+        return new DataGenerator(isAnimated, isAutoStart, animationTarget, delay, createSeries());
     }
 
     protected C3Color createColor() {
@@ -152,17 +161,17 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
 
     protected C3ChartSize createSize() {
         C3ChartSize size = null;
-        if (! displayerSettings.isResizable()) {
-            size = factory.c3ChartSize(displayerSettings.getChartWidth(), 
+        if (!displayerSettings.isResizable()) {
+            size = factory.c3ChartSize(displayerSettings.getChartWidth(),
                                        displayerSettings.getChartHeight());
-        } 
+        }
         return size;
     }
 
     protected C3Padding createPadding() {
-        return factory.c3Padding(displayerSettings.getChartMarginTop(), 
-                                 displayerSettings.getChartMarginRight(), 
-                                 displayerSettings.getChartMarginBottom(), 
+        return factory.c3Padding(displayerSettings.getChartMarginTop(),
+                                 displayerSettings.getChartMarginRight(),
+                                 displayerSettings.getChartMarginBottom(),
                                  displayerSettings.getChartMarginLeft());
     }
 
@@ -171,7 +180,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
     }
 
     protected C3ChartData createData() {
-        String[][] series = createSeries();
+        String[][] series = new String[0][0];
         String type = getView().getType();
         String[][] groups = createGroups();
         JsObject xs = createXs();
@@ -201,13 +210,13 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
         C3AxisY axisY = createAxisY();
         return factory.c3AxisInfo(false, axisX, axisY);
     }
-    
+
     protected C3AxisX createAxisX() {
-       String[] categories = createCategories();
-       C3Tick tick = createTickX();
-       return factory.c3AxisX("category", categories, tick);
+        String[] categories = createCategories();
+        C3Tick tick = createTickX();
+        return factory.c3AxisX("category", categories, tick);
     }
-    
+
     protected C3Tick createTickX() {
         return factory.createC3Tick(null);
     }
@@ -215,14 +224,14 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
     protected C3AxisY createAxisY() {
         C3Tick tickY = createTickY();
         return factory.c3AxisY(true, tickY);
-     }
+    }
 
     protected C3Tick createTickY() {
         return factory.createC3Tick(f -> {
             try {
                 double doubleFormat = Double.parseDouble(f);
                 return NumberFormat.getFormat("#,###.##").format(doubleFormat);
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return f;
             }
         });
@@ -259,7 +268,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
      */
     protected String[][] createSeries() {
         List<DataColumn> columns = dataSet.getColumns();
-        String[][] data  = null;
+        String[][] data = null;
         if (columns.size() > 1) {
             data = new String[columns.size() - 1][];
             for (int i = 1; i < columns.size(); i++) {
@@ -269,24 +278,23 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
                 String[] seriesValues = new String[values.size() + 1];
                 seriesValues[0] = columnSettings.getColumnName();
                 for (int j = 0; j < values.size(); j++) {
-                    seriesValues[j + 1] = values.get(j).toString(); 
+                    seriesValues[j + 1] = values.get(j).toString();
                 }
                 data[i - 1] = seriesValues;
             }
         }
         return data;
     }
-    
+
     protected int getSelectedRowIndex(C3DataInfo info) {
         return info.getIndex();
     }
-    
-    
+
     protected String getSelectedCategory(C3DataInfo info) {
         List<?> values = dataSet.getColumns().get(0).getValues();
         return values.get(info.getIndex()).toString();
     }
-    
+
     protected String[][] getDataTable() {
         List<DataColumn> columns = dataSet.getColumns();
         String data[][] = new String[columns.size()][];
@@ -298,8 +306,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
             }
         }
         return data;
-    }    
-    
+    }
+
     private void addToSelection(C3DataInfo data) {
         int row = getSelectedRowIndex(data);
         addToSelection(row);
@@ -317,5 +325,5 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends C3Abstract
         String c3LegendPosition = C3Legend.convertPosition(legendPosition);
         return c3LegendPosition;
     }
-    
+
 }

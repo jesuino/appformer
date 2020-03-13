@@ -274,4 +274,17 @@ public interface CommonConstants extends Messages {
     String map_group();
 
     String color_scheme();
+
+    String animation_group();
+
+    String animation_enabled();
+
+    String auto_start();
+
+    String delay();
+
+    String transition_duration();
+
+    String animation_target();
+
 }

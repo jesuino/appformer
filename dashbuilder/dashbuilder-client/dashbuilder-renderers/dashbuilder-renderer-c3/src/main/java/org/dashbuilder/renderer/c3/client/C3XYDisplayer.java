@@ -43,6 +43,7 @@ public abstract class C3XYDisplayer<V extends C3Displayer.View> extends C3Displa
          return conf;
     }
     
+    @Override
     protected C3Tick createTickY() {
         return factory.createC3Tick(f -> {
             List<DataColumn> columns = dataSet.getColumns();

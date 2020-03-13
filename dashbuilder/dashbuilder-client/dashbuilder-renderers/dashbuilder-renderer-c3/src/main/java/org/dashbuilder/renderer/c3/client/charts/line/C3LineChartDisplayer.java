@@ -77,7 +77,8 @@ public class C3LineChartDisplayer extends C3XYDisplayer<C3LineChartDisplayer.Vie
 
         return new CommonC3DisplayerConstants(lookupConstraints).create()
                    .supportsAttribute(DisplayerAttributeDef.SUBTYPE)
-                   .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);
+                   .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP)
+                   .supportsAttribute(DisplayerAttributeGroupDef.ANIMATION_GROUP);
     }
 
 }
