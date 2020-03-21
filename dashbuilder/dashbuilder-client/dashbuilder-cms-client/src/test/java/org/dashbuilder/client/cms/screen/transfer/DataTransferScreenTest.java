@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dashbuilder.transfer.DataTransferExportModel;
 import org.dashbuilder.transfer.DataTransferServices;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,9 +61,9 @@ public class DataTransferScreenTest {
     @Test
     public void doExportTest() throws Exception {
         String path = "path";
-        when(dataTransferServices.doExport()).thenReturn(path);
+        when(dataTransferServices.doExport(DataTransferExportModel.exportAll())).thenReturn(path);
         dataTransferScreen.doExport();
-        verify(dataTransferServices).doExport();
+        verify(dataTransferServices).doExport(DataTransferExportModel.exportAll());
         verify(view).exportOK();
         verify(view).download(path);
     }
@@ -70,9 +71,9 @@ public class DataTransferScreenTest {
     @Test
     public void doExportFailureTest() throws Exception {
         IOException exception = new IOException();
-        when(dataTransferServices.doExport()).thenThrow(exception);
+        when(dataTransferServices.doExport(DataTransferExportModel.exportAll())).thenThrow(exception);
         dataTransferScreen.doExport();
-        verify(dataTransferServices).doExport();
+        verify(dataTransferServices).doExport(DataTransferExportModel.exportAll());
         verify(view).exportError(exception);
     }
 

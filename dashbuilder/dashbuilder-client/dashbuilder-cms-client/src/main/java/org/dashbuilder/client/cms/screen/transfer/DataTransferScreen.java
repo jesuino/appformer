@@ -30,6 +30,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElemental;
+import org.dashbuilder.transfer.DataTransferExportModel;
 import org.dashbuilder.transfer.DataTransferServices;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 
@@ -83,7 +84,7 @@ public class DataTransferScreen {
                     view.exportError(throwable);
                     return false;
 
-                }).doExport();
+                }).doExport(DataTransferExportModel.exportAll());
 
         } catch (Exception e) {
             view.exportError(e);

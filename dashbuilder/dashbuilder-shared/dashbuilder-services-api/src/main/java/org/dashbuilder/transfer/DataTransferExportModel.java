@@ -15,6 +15,10 @@ public class DataTransferExportModel {
     private List<String> pages;
     private boolean exportNavigation;
     private boolean exportAll;
+    
+
+    public DataTransferExportModel() {
+    }
 
     public DataTransferExportModel(List<DataSetDef> datasetDefinitions, List<String> pages, boolean exportNavigation) {
         this(datasetDefinitions, pages, exportNavigation, false);
