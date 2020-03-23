@@ -32,7 +32,7 @@ public interface DataTransferServices {
     
     public List<String> doImport() throws Exception;
     
-    public DataTransferAssetsExport assetsToExport();
+    public DataTransferAssets assetsToExport();
     
     public Map<String, String> validateExport(DataTransferExportModel exportsModel);
 }

@@ -1,28 +1,96 @@
-<div class="panel-group" id="accordion-markup" style="width: 240px">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h4 class="panel-title">
-				<a data-toggle="collapse" data-parent="#accordion-markup"
-					href="#collapseOne">DataSets</a>
-			</h4>
-		</div>
-		<div id="collapseOne" class="panel-collapse collapse in">
-			<div class="panel-body">Datasets tables here</div>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h4 class="panel-title">
-				<a data-toggle="collapse" data-parent="#accordion-markup"
-					href="#collapseTwo" class="collapsed"> Dolor sit amet </a>
-			</h4>
-		</div>
-		<div id="collapseTwo" class="panel-collapse collapse">
-			<div class="panel-body">Donec consequat dignissim neque, sed
-				suscipit quam egestas in. Fusce bibendum laoreet lectus commodo
-				interdum. Vestibulum odio ipsum, tristique et ante vel, iaculis
-				placerat nulla. Suspendisse iaculis urna feugiat lorem semper, ut
-				iaculis risus tempus.</div>
+<div id="dataTransferExportModalBody" class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel-group" id="accordion-markup">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion-markup"
+								href="#collapseOne">DataSets</a>
+						</h4>
+					</div>
+					<div id="collapseOne" class="panel-collapse collapse in">
+						<div class="panel-body assets-panel-body">
+							<form role="form" class="search-pf has-button">
+								<div class="form-group has-clear">
+									<div class="search-pf-input-group">
+										<label for="searchDatasets" class="sr-only">Filter</label> <input
+											id="searchDatasets" type="search" class="form-control"
+											placeholder="Filter">
+
+									</div>
+								</div>
+							</form>
+							<!-- DataSets Table -->
+							<table class="table table-striped table-bordered table-hover"
+								id="datasetsTable">
+								<thead>
+									<tr>
+										<th><input type="checkbox" id="selectAllDatasets" /></th>
+										<th>UUID</th>
+										<th>Name</th>
+										<th>Type</th>
+									</tr>
+								</thead>
+								<tbody id="">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion-markup"
+								href="#collapseTwo" class="collapsed">Pages</a>
+						</h4>
+					</div>
+					<div id="collapseTwo" class="panel-collapse collapse">
+						<div class="panel-body assets-panel-body">
+							<form role="form" class="search-pf has-button">
+								<div class="form-group has-clear">
+									<div class="search-pf-input-group">
+										<label for="searchPages" class="sr-only">Filter</label> <input
+											id="searchPages" type="search" class="form-control"
+											placeholder="Filter">
+
+									</div>
+								</div>
+							</form>
+							<!-- Pages Table -->
+							<table class="table table-striped table-bordered table-hover"
+								id="pagesTable">
+								<thead>
+									<tr>
+										<th><input type="checkbox" id="selectAllPages" /></th>
+										<th>Name</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion-markup"
+								href="#collapseThree" class="collapsed">Navigation</a>
+						</h4>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse">
+						<div class="panel-body assets-panel-body">
+							<form role="form">
+								<div class="form-group">
+									<label for="exportNavigation" class="sr-only">Export
+										Navigation</label> <input id="exportNavigation" type="checkbox"
+										class="form-control" checked>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

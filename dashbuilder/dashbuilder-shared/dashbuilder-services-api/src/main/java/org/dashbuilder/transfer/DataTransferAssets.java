@@ -20,15 +20,15 @@ import java.util.List;
 
 import org.dashbuilder.dataset.def.DataSetDef;
 
-public class DataTransferAssetsExport {
+public class DataTransferAssets {
 
     private List<DataSetDef> datasetsDefinitions;
 
     private List<String> pages;
 
-    public DataTransferAssetsExport() {}
+    public DataTransferAssets() {}
 
-    public DataTransferAssetsExport(List<DataSetDef> datasetsDefinitions, List<String> pages) {
+    public DataTransferAssets(List<DataSetDef> datasetsDefinitions, List<String> pages) {
         this.datasetsDefinitions = datasetsDefinitions;
         this.pages = pages;
     }

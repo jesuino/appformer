@@ -204,7 +204,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
     }
 
     @Override
-    public DataTransferAssetsExport assetsToExport() {
+    public DataTransferAssets assetsToExport() {
         List<String> pages = listPaths(perspectivesFS,
                                        p -> p.endsWith(FILE_EXT)).stream()
                                                                  .map(p -> p.getName(p.getNameCount() - 2))
@@ -216,7 +216,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                                                                .map(this::getFileContent)
                                                                                .map(this::parseDataSetDefinition)
                                                                                .collect(Collectors.toList());
-        return new DataTransferAssetsExport(datasetsDefs, pages);
+        return new DataTransferAssets(datasetsDefs, pages);
     }
 
     @Override

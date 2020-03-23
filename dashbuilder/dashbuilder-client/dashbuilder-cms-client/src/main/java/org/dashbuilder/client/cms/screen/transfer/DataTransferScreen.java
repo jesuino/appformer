@@ -43,6 +43,9 @@ public class DataTransferScreen {
     private Caller<DataTransferServices> dataTransferServices;
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private DataTransferPopUp popUp;
+    
+    @Inject
+    DataTransferExportPopUp dataTransferExportPopUp;
 
     public DataTransferScreen() {
     }
@@ -71,24 +74,27 @@ public class DataTransferScreen {
     @PostConstruct
     public void init() {
         view.init(this);
+        dataTransferExportPopUp.setCallback(dataTransferExportModel -> {
+            try {
+                dataTransferServices.call(
+                    (RemoteCallback<String>) path -> {
+                        view.exportOK();
+                        view.download(path);
+
+                    }, (ErrorCallback<Exception>) (message, throwable) -> {
+                        view.exportError(throwable);
+                        return false;
+
+                    }).doExport(dataTransferExportModel);
+
+            } catch (Exception e) {
+                view.exportError(e);
+            }
+        });
     }
 
     public void doExport() {
-        try {
-            dataTransferServices.call(
-                (RemoteCallback<String>) path -> {
-                    view.exportOK();
-                    view.download(path);
-
-                }, (ErrorCallback<Exception>) (message, throwable) -> {
-                    view.exportError(throwable);
-                    return false;
-
-                }).doExport(DataTransferExportModel.exportAll());
-
-        } catch (Exception e) {
-            view.exportError(e);
-        }
+        dataTransferExportPopUp.show();
     }
 
     public void doImport() {
