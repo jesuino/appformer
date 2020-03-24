@@ -22,9 +22,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
 import elemental2.dom.Element.OnclickCallbackFn;
 import elemental2.dom.HTMLCollection;
@@ -36,19 +36,25 @@ import elemental2.dom.HTMLTableElement;
 import elemental2.dom.HTMLTableRowElement;
 import elemental2.dom.NodeList;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
+import org.dashbuilder.client.cms.screen.util.DomFactory;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.transfer.DataTransferAssets;
 import org.dashbuilder.transfer.DataTransferExportModel;
 import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.ext.editor.commons.client.file.popups.CommonModalBuilder;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Templated
 @Dependent
 public class DataTransferExportPopUpView implements DataTransferExportPopUp.View {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataTransferExportPopUpView.class);
 
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private DataTransferExportPopUp presenter;
@@ -93,6 +99,12 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
     @Inject
     @DataField
     HTMLDivElement dataSelectionAccordion;
+
+    @Inject
+    private Event<NotificationEvent> workbenchNotification;
+
+    @Inject
+    DomFactory domFactory;
 
     private DataTransferAssets assetsToExport;
 
@@ -142,22 +154,22 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
     @Override
     public void setAssetsToExport(DataTransferAssets assetsToExport) {
         this.assetsToExport = assetsToExport;
-        DomGlobal.setTimeout(e -> finishedLoading(), 2000);
+        finishedLoading();
     }
 
     private void fillPagesTable() {
         HTMLElement pageBody = pagesTable.tBodies.getAt(0);
         pageBody.innerHTML = "";
         for (String page : this.assetsToExport.getPages()) {
-            HTMLTableCellElement pageCell = createCell();
-            HTMLTableCellElement selectCell = createCell();
+            HTMLTableCellElement pageCell = domFactory.tableCell();
+            HTMLTableCellElement selectCell = domFactory.tableCell();
             HTMLInputElement select = createCheckBox();
             select.onclick = verifyAllCheck(selectAllPages, pagesTable);
             select.id = page;
             selectCell.appendChild(select);
             pageCell.innerHTML = page;
 
-            HTMLTableRowElement pageRow = createRow();
+            HTMLTableRowElement pageRow = domFactory.tableRow();
             pageRow.appendChild(selectCell);
             pageRow.appendChild(pageCell);
             pageBody.appendChild(pageRow);
@@ -170,10 +182,10 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
         for (DataSetDef dataSetDef : this.assetsToExport.getDatasetsDefinitions()) {
             HTMLInputElement select = createCheckBox();
             select.onclick = verifyAllCheck(selectAllDatasets, datasetsTable);
-            HTMLTableCellElement dsSelectCell = createCell();
+            HTMLTableCellElement dsSelectCell = domFactory.tableCell();
             select.id = dataSetDef.getUUID();
             dsSelectCell.appendChild(select);
-            HTMLTableRowElement dsRow = createRow();
+            HTMLTableRowElement dsRow = domFactory.tableRow();
             dsRow.appendChild(dsSelectCell);
             Stream.of(dataSetDef.getUUID(),
                       dataSetDef.getName(),
@@ -197,49 +209,41 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
         List<DataSetDef> datasets = getSelectedRows(datasetsTable, assetsToExport.getDatasetsDefinitions());
         List<String> pages = getSelectedRows(pagesTable, assetsToExport.getPages());
 
-        DataTransferExportModel dataTransferExportModel = new DataTransferExportModel(datasets,
-                                                                                      pages,
-                                                                                      exportNavigation.checked);
-        presenter.receiveSelectedAssets(dataTransferExportModel);
+        DataTransferExportModel exportModel = new DataTransferExportModel(datasets,
+                                                                          pages,
+                                                                          exportNavigation.checked);
+        presenter.receiveSelectedAssets(exportModel);
 
-    }
-
-    private HTMLTableRowElement createRow() {
-        return (HTMLTableRowElement) DomGlobal.document.createElement("tr");
     }
 
     private HTMLInputElement createCheckBox() {
-        HTMLInputElement checkbox = (HTMLInputElement) DomGlobal.document.createElement("input");
+        HTMLInputElement checkbox = domFactory.input();
         checkbox.type = "checkbox";
         checkbox.checked = true;
         return checkbox;
     }
 
     private HTMLTableCellElement createCell(String content) {
-        HTMLTableCellElement cell = createCell();
+        HTMLTableCellElement cell = domFactory.tableCell();
         cell.innerHTML = content;
         return cell;
     }
 
-    private HTMLTableCellElement createCell() {
-        return (HTMLTableCellElement) DomGlobal.document.createElement("td");
-    }
-
     private Stream<HTMLInputElement> allInputsForTable(HTMLTableElement table) {
-        // as array throws cast exception
+        // asArray throws cast exception
         NodeList<Element> items = table.querySelectorAll("tbody > tr > td:first-of-type > input[type=checkbox]");
         return IntStream.range(0, items.getLength()).mapToObj(i -> (HTMLInputElement) items.getAt(i));
     }
 
-    private void filterTable(HTMLInputElement filter, HTMLTableElement table) {
+    protected void filterTable(HTMLInputElement filter, HTMLTableElement table) {
         String query = filter.value.trim().toLowerCase();
         HTMLCollection<HTMLTableRowElement> rows = table.tBodies.getAt(0).rows;
         IntStream.range(0, rows.getLength()).mapToObj(rows::getAt).forEach(row -> {
             row.hidden = false;
             if (!query.isEmpty()) {
                 row.hidden = IntStream.range(0, row.cells.getLength())
-                                      .mapToObj(row.cells::getAt)
-                                      .noneMatch(c -> c.textContent.toLowerCase().contains(query));
+                                       .mapToObj(row.cells::getAt)
+                                       .noneMatch(c -> c.textContent.toLowerCase().contains(query));
             }
 
         });
@@ -268,6 +272,16 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
         selectAllPages.checked = true;
         fillDataSetsTable();
         fillPagesTable();
+    }
+
+    @Override
+    public void showError(Throwable error) {
+        String dataTransferExportError = i18n.dataTransferExportError();
+        LOGGER.error(dataTransferExportError, error);
+        NotificationEvent errorEvent = new NotificationEvent(dataTransferExportError,
+                                                             NotificationEvent.NotificationType.ERROR);
+        workbenchNotification.fire(errorEvent);
+        modal.hide();
     }
 
 }

@@ -45,6 +45,9 @@ public class DataTransferScreenTest {
     @Mock
     private DataTransferPopUp dataTransferPopUp;
 
+    @Mock
+    private DataTransferExportPopUp dataTransferExportPopUp;
+
     private DataTransferScreen dataTransferScreen;
 
     private CallerMock<DataTransferServices> dataTransferServicesCaller;
@@ -55,15 +58,18 @@ public class DataTransferScreenTest {
         dataTransferScreen = new DataTransferScreen(
             view,
             dataTransferPopUp,
-            dataTransferServicesCaller);
+            dataTransferServicesCaller,
+            dataTransferExportPopUp);
     }
 
     @Test
     public void doExportTest() throws Exception {
         String path = "path";
-        when(dataTransferServices.doExport(DataTransferExportModel.exportAll())).thenReturn(path);
-        dataTransferScreen.doExport();
-        verify(dataTransferServices).doExport(DataTransferExportModel.exportAll());
+        DataTransferExportModel exportAll = DataTransferExportModel.exportAll();
+        when(dataTransferServices.doExport(exportAll)).thenReturn(path);
+        dataTransferScreen.init();
+        dataTransferScreen.exportCallback.execute(exportAll);
+        verify(dataTransferServices).doExport(exportAll);
         verify(view).exportOK();
         verify(view).download(path);
     }
@@ -71,9 +77,13 @@ public class DataTransferScreenTest {
     @Test
     public void doExportFailureTest() throws Exception {
         IOException exception = new IOException();
-        when(dataTransferServices.doExport(DataTransferExportModel.exportAll())).thenThrow(exception);
-        dataTransferScreen.doExport();
-        verify(dataTransferServices).doExport(DataTransferExportModel.exportAll());
+        DataTransferExportModel exportAll = DataTransferExportModel.exportAll();
+        dataTransferScreen.init();
+        when(dataTransferServices.doExport(exportAll)).thenThrow(exception);
+        
+        dataTransferScreen.exportCallback.execute(exportAll);
+        
+        verify(dataTransferServices).doExport(exportAll);
         verify(view).exportError(exception);
     }
 

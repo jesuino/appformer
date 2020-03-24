@@ -30,10 +30,8 @@ import org.uberfire.mvp.ParameterizedCommand;
 @ApplicationScoped
 public class DataTransferExportPopUp {
 
-    @Inject
     private View view;
 
-    @Inject
     private Caller<DataTransferServices> dataTransferServices;
 
     private ParameterizedCommand<DataTransferExportModel> dataTransferExportModelCallback;
@@ -44,8 +42,17 @@ public class DataTransferExportPopUp {
 
         void setAssetsToExport(DataTransferAssets assetsToExport);
 
+        void showError(Throwable error);
+
     }
-    
+
+    @Inject
+    public DataTransferExportPopUp(View view,
+                                   Caller<DataTransferServices> dataTransferServices) {
+        this.view = view;
+        this.dataTransferServices = dataTransferServices;
+    }
+
     @PostConstruct
     public void init() {
         view.init(this);
@@ -56,9 +63,13 @@ public class DataTransferExportPopUp {
 
     }
 
-    public void show() {
+    public void load() {
         view.show();
-        dataTransferServices.call((DataTransferAssets v) -> view.setAssetsToExport(v))
+        dataTransferServices.call((DataTransferAssets v) -> view.setAssetsToExport(v),
+                                  (message, error) -> {
+                                      view.showError(error);
+                                      return false;
+                                  })
                             .assetsToExport();
 
     }
