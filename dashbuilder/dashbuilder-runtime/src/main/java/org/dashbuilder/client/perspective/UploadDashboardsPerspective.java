@@ -2,7 +2,7 @@ package org.dashbuilder.client.perspective;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.dashbuilder.client.screens.EmptyScreen;
+import org.dashbuilder.client.screens.UploadDashboardsScreen;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
@@ -13,17 +13,18 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = DashboardPerspective.ID, isDefault = true, isTransient = true)
-public class DashboardPerspective {
+@WorkbenchPerspective(identifier = UploadDashboardsPerspective.ID)
+public class UploadDashboardsPerspective {
 
-    static final String ID = "DashboardPerspective";
+    public static final String ID = "EmptyPerspective";
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
-        final PlaceRequest place = new DefaultPlaceRequest(EmptyScreen.ID);
-        final PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
-        perspective.setName("Dashboards");
-        perspective.getRoot().addPart(new PartDefinitionImpl(place));
+        PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
+        final PlaceRequest place = new DefaultPlaceRequest(UploadDashboardsScreen.ID);
+        PartDefinitionImpl dashboardScreen = new PartDefinitionImpl(place);
+        perspective.getRoot().addPart(dashboardScreen);
+        perspective.setName("Upload Dashboard");
         return perspective;
     }
 
