@@ -28,7 +28,7 @@ import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.model.RuntimeModel;
-import org.dashbuilder.shared.service.ImportModelService;
+import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -54,7 +54,7 @@ public class RuntimeScreen extends Composite {
     HTMLDivElement root;
 
     @Inject
-    private Caller<ImportModelService> importModelServiceCaller;
+    private Caller<RuntimeModelService> importModelServiceCaller;
 
     @Inject
     NavigationManager navigationManager;

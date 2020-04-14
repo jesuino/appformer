@@ -48,9 +48,10 @@ public interface ImportModelRegistry {
     public void setMode(DashbuilderRuntimeMode mode);
 
     /**
-     * Create the import store from a file InputStream
-     * @param fileStream
+     * Store the import from a File path;
+     * @param filePath
+     * The path to the file
      */
-    public void store(String id, InputStream fileStream);
+    public Optional<ImportModel> registerFile(String filePath);
 
 }

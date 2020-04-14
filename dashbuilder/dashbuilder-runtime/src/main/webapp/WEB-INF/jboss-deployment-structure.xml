@@ -39,6 +39,11 @@
 			<module name="org.jboss.as.domain-management" />
 			<module name="org.jboss.msc" />
 			<module name="org.jboss.dmr" />
+
+			<module name="org.jboss.resteasy.resteasy-multipart-provider" />
+			<module name="org.apache.xerces" />
+			<module name="org.apache.xalan" />
+			
 		</dependencies>
 	</deployment>
 </jboss-deployment-structure>

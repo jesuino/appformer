@@ -13,8 +13,10 @@ import com.google.gson.GsonBuilder;
 import org.dashbuilder.navigation.NavDivider;
 import org.dashbuilder.navigation.NavGroup;
 import org.dashbuilder.navigation.NavItem;
+import org.dashbuilder.navigation.NavItemContext;
 import org.dashbuilder.navigation.NavItemVisitor;
 import org.dashbuilder.navigation.NavTree;
+import org.dashbuilder.navigation.impl.NavItemContextImpl;
 import org.dashbuilder.navigation.impl.NavTreeBuilder;
 import org.dashbuilder.navigation.json.NavTreeJSONMarshaller;
 import org.dashbuilder.navigation.workbench.NavWorkbenchCtx;
@@ -22,13 +24,13 @@ import org.dashbuilder.shared.model.ImportModel;
 import org.dashbuilder.shared.model.PerspectiveContent;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.ImportModelRegistry;
-import org.dashbuilder.shared.service.ImportModelService;
+import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
 @Service
 @ApplicationScoped
-public class ImportModelServiceImpl implements ImportModelService {
+public class RuntimeModelServiceImpl implements RuntimeModelService {
 
     @Inject
     ImportModelRegistry importModelRegistry;
@@ -41,24 +43,23 @@ public class ImportModelServiceImpl implements ImportModelService {
     }
 
     @Override
-    public Optional<ImportModel> getImportModel(String importModelId) {
-        return importModelRegistry.get(importModelId);
-    }
-
-    @Override
     public Optional<RuntimeModel> getRuntimeModel(String exportPath) {
         Optional<ImportModel> importModelOp = importModelRegistry.get(exportPath);
-        if (importModelOp.isPresent()) {
-            ImportModel importModel = importModelOp.get();
-            List<LayoutTemplate> layoutTemplates = importModel.getPerspectives().stream()
-                                                              .map(PerspectiveContent::getContent)
-                                                              .map(content -> gson.fromJson(content, LayoutTemplate.class))
-                                                              .collect(Collectors.toList());
-            Optional<String> navTreeOp = importModel.getNavigationJSON();
-            NavTree navTree = buildNavigation(navTreeOp, layoutTemplates);
-            return Optional.of(new RuntimeModel(navTree, layoutTemplates));
+
+        if (!importModelOp.isPresent()) {
+            importModelOp = importModelRegistry.registerFile(exportPath);
         }
-        return Optional.empty();
+        return importModelOp.flatMap(this::buildRuntimeModel);
+    }
+
+    private Optional<RuntimeModel> buildRuntimeModel(ImportModel importModel) {
+        List<LayoutTemplate> layoutTemplates = importModel.getPerspectives().stream()
+                                                          .map(PerspectiveContent::getContent)
+                                                          .map(content -> gson.fromJson(content, LayoutTemplate.class))
+                                                          .collect(Collectors.toList());
+        Optional<String> navTreeOp = importModel.getNavigationJSON();
+        NavTree navTree = buildNavigation(navTreeOp, layoutTemplates);
+        return Optional.of(new RuntimeModel(navTree, layoutTemplates));
     }
 
     private NavTree buildNavigation(Optional<String> navTreeJson, List<LayoutTemplate> layoutTemplates) {
@@ -77,6 +78,9 @@ public class ImportModelServiceImpl implements ImportModelService {
 
                 @Override
                 public void visitGroup(NavGroup group) {
+                    if (group.getChildren().isEmpty()) {
+                        cleanedNavTree.deleteItem(group.getId());
+                    }
 
                 }
 
@@ -88,7 +92,12 @@ public class ImportModelServiceImpl implements ImportModelService {
             return cleanedNavTree;
         } else {
             NavTreeBuilder treeBuilder = new NavTreeBuilder();
-            layoutTemplates.forEach(lt -> treeBuilder.item(lt.getName(), lt.getName(), "", true));
+            treeBuilder.group("dashboards", "Dashboards", "Dashboards", false);
+            layoutTemplates.forEach(lt -> {
+                NavItemContext ctx = NavWorkbenchCtx.perspective(lt.getName());
+                treeBuilder.item(lt.getName(), lt.getName(), "", true, ctx);
+            });
+            treeBuilder.endGroup();
             return treeBuilder.build();
         }
 

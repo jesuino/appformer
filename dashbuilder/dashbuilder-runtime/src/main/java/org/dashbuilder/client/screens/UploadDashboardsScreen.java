@@ -19,24 +19,43 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.FormData;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
-import org.jboss.errai.common.client.api.elemental2.IsElement;
+import elemental2.dom.HTMLFormElement;
+import elemental2.dom.HTMLInputElement;
+import elemental2.dom.RequestInit;
+import elemental2.dom.Response;
+import jsinterop.base.Js;
+import org.dashbuilder.client.jsinterop.RequestInitFactory;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.lifecycle.OnOpen;
 
 @Templated
 @Dependent
-public class UploadDashboardsScreen implements IsElement {
+@WorkbenchScreen(identifier = UploadDashboardsScreen.ID)
+public class UploadDashboardsScreen extends Composite {
 
     public static final String ID = "UploadDashboardsScreen";
 
     @Inject
     @DataField
     HTMLButtonElement btnImport;
+
+    @Inject
+    @DataField
+    HTMLFormElement uploadForm;
+
+    @Inject
+    @DataField
+    HTMLInputElement inputFile;
 
     @Inject
     @DataField
@@ -48,18 +67,37 @@ public class UploadDashboardsScreen implements IsElement {
     @PostConstruct
     public void build() {
         btnImport.onclick = e -> {
+            inputFile.click();
+            return null;
+        };
+
+        inputFile.onchange = e -> {
+            RequestInit request = RequestInitFactory.create();
+            request.setMethod("POST");
+            request.setBody(new FormData(uploadForm));
+            DomGlobal.window.fetch("/rest/upload", request).then((Response response) -> {
+                return response.text().then(text -> {
+                    DomGlobal.window.location.assign("/dashbuilder.html?import=" + text);
+                    return null;
+                });
+            }, error -> {
+                DomGlobal.window.alert(error);
+                return null;
+            });
             return null;
         };
     }
 
     @OnOpen
     public void onOpen() {
+        HTMLElement menuBarElement = Js.cast(menuBar.getView().getElement());
+        menuBarElement.remove();
         menuBar.clear();
     }
 
-    @Override
-    public HTMLElement getElement() {
-        return emptyImport;
+    @WorkbenchPartTitle
+    public String title() {
+        return "Upload Dashboards";
     }
 
 }

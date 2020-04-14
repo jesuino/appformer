@@ -15,16 +15,14 @@
  */
 package org.dashbuilder.backend;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.service.ImportModelRegistry;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
 @Startup
@@ -34,22 +32,20 @@ public class ImportModelLoader {
     private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
 
     private static final String IMPORT_FILE_LOCATION_PROP = "dashbuilder.runtime.import";
-    
-    Logger logger = Logger.getLogger(ImportModelLoader.class);
+
+    Logger logger = LoggerFactory.getLogger(ImportModelLoader.class);
 
     @Inject
     ImportModelRegistry importModelRegistry;
 
     @PostConstruct
-    private void doImport() {
-        String importFile = System.getProperty(IMPORT_FILE_LOCATION_PROP, "/home/wsiqueir/Downloads/export_full.zip");
+    private void doInitialImport() {
+        System.setProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, "true");
+        String importFile = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         if (importFile != null) {
+            logger.info("Importing file {}", importFile);
             importModelRegistry.setMode(DashbuilderRuntimeMode.SINGLE_IMPORT);
-            try (FileInputStream fis = new FileInputStream(importFile)) {
-                importModelRegistry.store(importFile, fis);
-            } catch (IOException e) {
-                logger.error("Not able to load file {}", importFile, e);
-            }
+            importModelRegistry.registerFile(importFile);
         }
         if (Boolean.getBoolean(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT)) {
             importModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);

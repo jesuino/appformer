@@ -1,5 +1,8 @@
 package org.dashbuilder.backend.services.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +19,13 @@ import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.model.ImportModel;
 import org.dashbuilder.shared.service.ImportModelParser;
 import org.dashbuilder.shared.service.ImportModelRegistry;
-
-import static org.dashbuilder.shared.model.DashbuilderRuntimeMode.MULTIPLE_IMPORT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class ImportModelRegistryImpl implements ImportModelRegistry {
+
+    Logger logger = LoggerFactory.getLogger(ImportModelRegistryImpl.class);
 
     Map<String, ImportModel> importModels;
 
@@ -39,23 +44,27 @@ public class ImportModelRegistryImpl implements ImportModelRegistry {
 
     @Override
     public Optional<ImportModel> get(String id) {
-        if (mode == MULTIPLE_IMPORT) {
-            return Optional.ofNullable(importModels.get(id));
+        if (mode != DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
+            return importModels.values().stream().findFirst();
         }
-        return importModels.values().stream().findFirst();
+        return Optional.ofNullable(importModels.get(id));
     }
 
     @Override
-    public void store(String id, InputStream fileStream) {
-        if (!acceptingNewImports()) {
-            throw new IllegalArgumentException("New imports are not allowed in mode " + mode);
+    public Optional<ImportModel> registerFile(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            return Optional.empty();
         }
-        if (id == null) {
-            id = UUID.randomUUID().toString();
+        if (!new File(filePath).exists()) {
+            logger.debug("File does not exist {}", filePath);
+            throw new IllegalArgumentException("File does not exist: " + filePath);
         }
-        ImportModel importModel = parser.parse(fileStream);
-        importModels.put(id, importModel);
-        newDataSetContentEvent.fire(new NewDataSetContentEvent(importModel.getDatasets()));
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            return register(filePath, fis);
+        } catch (IOException e) {
+            logger.error("Not able to load file {}", filePath, e);
+            throw new IllegalArgumentException("Error loading import file: " + filePath, e);
+        }
     }
 
     @Override
@@ -71,6 +80,23 @@ public class ImportModelRegistryImpl implements ImportModelRegistry {
     @Override
     public DashbuilderRuntimeMode getMode() {
         return mode;
+    }
+
+    public Optional<ImportModel> register(String id, InputStream fileStream) {
+        if (!acceptingNewImports()) {
+            throw new IllegalArgumentException("New imports are not allowed in mode " + mode);
+        }
+        try {
+            ImportModel importModel = parser.parse(fileStream);
+            if (id == null) {
+                id = UUID.randomUUID().toString();
+            }
+            importModels.put(id, importModel);
+            newDataSetContentEvent.fire(new NewDataSetContentEvent(importModel.getDatasets()));
+            return Optional.of(importModel);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error parsing import model.");
+        }
     }
 
 }
