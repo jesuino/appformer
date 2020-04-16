@@ -38,6 +38,7 @@ public class AppNavBar implements Header {
 
     @AfterInitialization
     public void setup() {
+        menuBarPresenter.clearContextMenu();
         header.appendChild(Js.cast(menuBarPresenter.getView().getElement()));
     }
 

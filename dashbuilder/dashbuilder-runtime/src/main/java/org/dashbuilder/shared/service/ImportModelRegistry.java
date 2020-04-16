@@ -1,6 +1,5 @@
 package org.dashbuilder.shared.service;
 
-import java.io.InputStream;
 import java.util.Optional;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
@@ -18,6 +17,14 @@ public interface ImportModelRegistry {
         return getMode() == MULTIPLE_IMPORT ||
                (getMode() == DashbuilderRuntimeMode.SINGLE_IMPORT && isEmpty());
     }
+    
+    /**
+     * Returns the first model available 
+     * 
+     * @return
+     */
+    Optional<ImportModel> single();
+    
 
     /**
      * Returns if this registry has at least one model.

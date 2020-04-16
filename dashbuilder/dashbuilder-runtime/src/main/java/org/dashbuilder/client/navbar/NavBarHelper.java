@@ -48,10 +48,9 @@ public class NavBarHelper {
             // Append its children
             if (navItem instanceof NavGroup) {
                 List<MenuItem> childItems = buildMenuItemsFromNavGroup((NavGroup) navItem);
-                if (childItems.isEmpty()) {
-                    continue;
+                if (! childItems.isEmpty()) {
+                    builder.withItems(childItems);
                 }
-                builder.withItems(childItems);
             }
             // Append the place request
             NavWorkbenchCtx navCtx = NavWorkbenchCtx.get(navItem);
@@ -75,10 +74,9 @@ public class NavBarHelper {
             MenuBuilder<MenuFactory.Builder> builder = MenuFactory.newSimpleItem(navItem.getName());
             if (navItem instanceof NavGroup) {
                 List<MenuItem> childItems = buildMenuItemsFromNavGroup((NavGroup) navItem);
-                if (childItems.isEmpty()) {
-                    continue;
+                if (!childItems.isEmpty()) {
+                    builder.withItems(childItems);
                 }
-                builder.withItems(childItems);
             }
             // Append the place request
             NavWorkbenchCtx navCtx = NavWorkbenchCtx.get(navItem);

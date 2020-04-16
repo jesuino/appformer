@@ -24,12 +24,10 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.FormData;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
-import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLFormElement;
 import elemental2.dom.HTMLInputElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
-import jsinterop.base.Js;
 import org.dashbuilder.client.jsinterop.RequestInitFactory;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -76,8 +74,8 @@ public class UploadDashboardsScreen extends Composite {
             request.setMethod("POST");
             request.setBody(new FormData(uploadForm));
             DomGlobal.window.fetch("/rest/upload", request).then((Response response) -> {
-                return response.text().then(text -> {
-                    DomGlobal.window.location.assign("/dashbuilder.html?import=" + text);
+                return response.text().then(id -> {
+                    DomGlobal.window.location.assign("/dashbuilder.html?import=" + id);
                     return null;
                 });
             }, error -> {
@@ -90,8 +88,6 @@ public class UploadDashboardsScreen extends Composite {
 
     @OnOpen
     public void onOpen() {
-        HTMLElement menuBarElement = Js.cast(menuBar.getView().getElement());
-        menuBarElement.remove();
         menuBar.clear();
     }
 

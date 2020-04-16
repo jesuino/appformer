@@ -29,25 +29,23 @@ import org.uberfire.commons.services.cdi.Startup;
 @ApplicationScoped
 public class ImportModelLoader {
 
-    private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
-
-    private static final String IMPORT_FILE_LOCATION_PROP = "dashbuilder.runtime.import";
-
     Logger logger = LoggerFactory.getLogger(ImportModelLoader.class);
 
     @Inject
     ImportModelRegistry importModelRegistry;
 
+    @Inject
+    RuntimeOptions runtimeOptions;
+
     @PostConstruct
     private void doInitialImport() {
-        System.setProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, "true");
-        String importFile = System.getProperty(IMPORT_FILE_LOCATION_PROP);
-        if (importFile != null) {
+        runtimeOptions.importFileLocation().ifPresent(importFile -> {
             logger.info("Importing file {}", importFile);
-            importModelRegistry.setMode(DashbuilderRuntimeMode.SINGLE_IMPORT);
+            importModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
             importModelRegistry.registerFile(importFile);
-        }
-        if (Boolean.getBoolean(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT)) {
+        });
+
+        if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
             importModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
         }
     }

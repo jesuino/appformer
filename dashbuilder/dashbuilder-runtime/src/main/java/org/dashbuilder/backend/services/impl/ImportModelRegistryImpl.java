@@ -43,27 +43,35 @@ public class ImportModelRegistryImpl implements ImportModelRegistry {
     }
 
     @Override
-    public Optional<ImportModel> get(String id) {
-        if (mode != DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
-            return importModels.values().stream().findFirst();
-        }
-        return Optional.ofNullable(importModels.get(id));
+    public Optional<ImportModel> single() {
+        return importModels.values().stream().findFirst();
     }
 
     @Override
-    public Optional<ImportModel> registerFile(String filePath) {
-        if (filePath == null || filePath.trim().isEmpty()) {
+    public Optional<ImportModel> get(String id) {
+        if (mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
+            return Optional.ofNullable(importModels.get(id));
+        }
+        return single();
+    }
+
+    @Override
+    public Optional<ImportModel> registerFile(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            logger.warn("Invalid file name {}", fileName);
             return Optional.empty();
         }
-        if (!new File(filePath).exists()) {
-            logger.debug("File does not exist {}", filePath);
-            throw new IllegalArgumentException("File does not exist: " + filePath);
+        File file = new File(fileName);
+        if (!file.exists()) {
+            logger.debug("File does not exist {}", fileName);
+            throw new IllegalArgumentException("File does not exist: " + fileName);
         }
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            return register(filePath, fis);
+        try (FileInputStream fis = new FileInputStream(fileName)) {
+            String importId = file.getName().replaceAll(".zip", "");
+            return register(importId, fis);
         } catch (IOException e) {
-            logger.error("Not able to load file {}", filePath, e);
-            throw new IllegalArgumentException("Error loading import file: " + filePath, e);
+            logger.error("Not able to load file {}", fileName, e);
+            throw new IllegalArgumentException("Error loading import file: " + fileName, e);
         }
     }
 

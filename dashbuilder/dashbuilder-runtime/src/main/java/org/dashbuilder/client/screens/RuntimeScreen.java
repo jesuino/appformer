@@ -26,6 +26,7 @@ import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLDivElement;
 import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.navigation.NavigationManager;
+import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
@@ -37,7 +38,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
-import org.uberfire.ext.plugin.client.perspective.editor.generator.PerspectiveEditorGenerator;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -51,7 +51,7 @@ public class RuntimeScreen extends Composite {
 
     @Inject
     @DataField
-    HTMLDivElement root;
+    HTMLDivElement runtimePage;
 
     @Inject
     private Caller<RuntimeModelService> importModelServiceCaller;
@@ -60,7 +60,7 @@ public class RuntimeScreen extends Composite {
     NavigationManager navigationManager;
 
     @Inject
-    PerspectiveEditorGenerator perspectiveEditorGenerator;
+    RuntimePerspectiveGenerator perspectiveEditorGenerator;
 
     @Inject
     NavBarHelper menusHelper;
@@ -104,6 +104,7 @@ public class RuntimeScreen extends Composite {
         runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
 
         menuBar.clear();
+        menuBar.clearContextMenu();
         menuBar.addMenus(menus);
     }
 

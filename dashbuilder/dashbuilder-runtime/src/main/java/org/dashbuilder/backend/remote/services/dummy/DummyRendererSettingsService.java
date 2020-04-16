@@ -14,7 +14,5 @@ public class DummyRendererSettingsService implements RendererSettingsService {
     public RendererSettings getSettings() {
         return new RendererSettings();
     }
-    
-    
 
 }

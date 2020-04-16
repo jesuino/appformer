@@ -6,11 +6,13 @@ import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
+import org.dashbuilder.backend.RuntimeOptions;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,12 @@ public class UploadResource {
 
     Logger logger = LoggerFactory.getLogger(UploadResource.class);
 
-    private static final String BASE_PATH = System.getProperty("org.dashbuilder.base.dir", "/tmp/dashbuilder/");
+    @Inject
+    RuntimeOptions runtimeOptions;
 
     @PostConstruct
     public void createBaseDir() throws IOException {
-        java.nio.file.Path baseDirPath = Paths.get(BASE_PATH);
+        java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
         if (!Files.exists(baseDirPath)) {
             Files.createDirectory(baseDirPath);
         }
@@ -39,14 +42,14 @@ public class UploadResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String uploadFile(@MultipartForm FileUploadModel form) throws IOException {
         logger.info("Uploading file with size {} bytes", form.getFileData().length);
-        String fileName = System.currentTimeMillis() + ".zip";
-        String filePath = BASE_PATH.concat(fileName);
 
         // TODO: validate file?
         // TODO: limit size?
 
+        String fileId = System.currentTimeMillis() + "";
+        String filePath = String.join("/", runtimeOptions.getImportsBaseDir(), fileId).concat(".zip");
         Files.write(Paths.get(filePath), form.getFileData());
-        return filePath;
+        return fileId;
     }
 
 }
