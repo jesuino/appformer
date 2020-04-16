@@ -38,32 +38,44 @@ public class RuntimeNavigationBuilder {
         return navTreeForTemplates(layoutTemplates);
     }
 
+    private NavTree buildPrunedTree(Optional<String> navTreeJson, List<LayoutTemplate> layoutTemplates) {
+        NavTree navTree = NavTreeJSONMarshaller.get().fromJson(navTreeJson.get());
+        RuntimeNavItemVisitor visitor = new RuntimeNavItemVisitor(layoutTemplates);
+
+        navTree.accept(visitor);
+
+        List<NavGroup> groups = visitor.getGroups();
+        List<String> notExported = visitor.getNotExportedPerspectives();
+        List<LayoutTemplate> orphanTemplates = visitor.getOrphanItems();
+
+        groups.forEach(grp -> grp.getChildren().removeIf(i -> notExported.contains(i.getId())));
+        groups.removeIf(grp -> grp.getChildren().isEmpty());
+
+        NavTreeBuilder builder = new NavTreeBuilder();
+
+        if (!orphanTemplates.isEmpty()) {
+            logger.info("Found {} layout components without a group", orphanTemplates.size());
+            buildLayoutTemplatesGroup(orphanTemplates, builder);
+        }
+
+        NavTree runtimeNavTree = builder.build();
+        runtimeNavTree.getRootItems().addAll(groups);
+        return runtimeNavTree;
+    }
+
     private NavTree navTreeForTemplates(List<LayoutTemplate> layoutTemplates) {
         NavTreeBuilder treeBuilder = new NavTreeBuilder();
+        return buildLayoutTemplatesGroup(layoutTemplates, treeBuilder).build();
+    }
+
+    private NavTreeBuilder buildLayoutTemplatesGroup(List<LayoutTemplate> layoutTemplates, NavTreeBuilder treeBuilder) {
         treeBuilder.group("dashboards", "Runtime Dashboards", "Dashboards", false);
         layoutTemplates.forEach(lt -> {
             NavItemContext ctx = NavWorkbenchCtx.perspective(lt.getName());
             treeBuilder.item(lt.getName(), lt.getName(), "", true, ctx);
         });
         treeBuilder.endGroup();
-        return treeBuilder.build();
-    }
-
-    private NavTree buildPrunedTree(Optional<String> navTreeJson, List<LayoutTemplate> layoutTemplates) {
-        NavTree navTree = NavTreeJSONMarshaller.get().fromJson(navTreeJson.get());
-        NavTree runtimeNavTree = navTree.cloneTree();
-        RuntimeNavigationVisitor visitor = new RuntimeNavigationVisitor(layoutTemplates, runtimeNavTree);
-        
-        navTree.accept(visitor);
-        removeEmptyGroups(runtimeNavTree);
-        
-        List<LayoutTemplate> orphanTemplates = visitor.getOrphanItems();
-        if (!orphanTemplates.isEmpty()) {
-            logger.info("Found {} layout components without a group", orphanTemplates.size());
-            navTreeForTemplates(orphanTemplates).getRootItems()
-                                                .forEach(runtimeNavTree.getRootItems()::add);
-        }
-        return runtimeNavTree;
+        return treeBuilder;
     }
 
     List<LayoutTemplate> checkOrphansLayoutTemplates(NavTree navTree,
@@ -71,14 +83,6 @@ public class RuntimeNavigationBuilder {
         return layoutTemplates.stream()
                               .filter(lt -> navTree.getItemById(lt.getName()) == null)
                               .collect(Collectors.toList());
-    }
-
-    void removeEmptyGroups(NavTree target) {
-        List<String> itemsToRemove = new ArrayList<>();
-        filteringGroups(target.getRootItems()).forEach(group -> {
-            removedEmptyNestedGroups(group, itemsToRemove);
-        });
-        itemsToRemove.forEach(target::deleteItem);
     }
 
     /**
@@ -105,25 +109,30 @@ public class RuntimeNavigationBuilder {
     }
 
     /**
-     * Visitor responsible to collect orphan items and clean unused groups
+     * Collects non empty groups and create a flatten tree (all groups as root items). 
      *
      */
-    class RuntimeNavigationVisitor implements NavItemVisitor {
+    class RuntimeNavItemVisitor implements NavItemVisitor {
 
-        List<LayoutTemplate> orphanItems;
+        List<NavGroup> groups;
         List<LayoutTemplate> layoutTemplates;
-        NavTree targetTree;
+        List<LayoutTemplate> orphanItems;
+        List<String> notExportedPerspectives;
 
-        private RuntimeNavigationVisitor(List<LayoutTemplate> layoutTemplates, NavTree targetTree) {
-            this.layoutTemplates = layoutTemplates;
+        public RuntimeNavItemVisitor(List<LayoutTemplate> layoutTemplates) {
+            this.groups = new ArrayList<>();
+            this.notExportedPerspectives = new ArrayList<>();
             this.orphanItems = new ArrayList<>(layoutTemplates);
-            this.targetTree = targetTree;
+            this.layoutTemplates = layoutTemplates;
         }
 
         @Override
         public void visitGroup(NavGroup group) {
-            if (group.getChildren().isEmpty()) {
-                targetTree.deleteItem(group.getId());
+            if (!group.getChildren().isEmpty()) {
+                NavGroup clonnedGroup = (NavGroup) group.cloneItem();
+                clonnedGroup.setParent(null);
+                clonnedGroup.getChildren().removeIf(item -> item instanceof NavGroup);
+                groups.add(clonnedGroup);
             }
         }
 
@@ -131,13 +140,12 @@ public class RuntimeNavigationBuilder {
         public void visitItem(NavItem item) {
             String resourceId = NavWorkbenchCtx.get(item.getContext()).getResourceId();
             if (layoutTemplates.stream().noneMatch(lt -> lt.getName().equals(resourceId))) {
-                targetTree.deleteItem(item.getId());
+                notExportedPerspectives.add(item.getId());
             }
 
             orphanItems.stream()
                        .filter(lt -> lt.getName().equals(resourceId))
                        .findFirst().ifPresent(notOrphanItem -> orphanItems.remove(notOrphanItem));
-
         }
 
         @Override
@@ -145,8 +153,16 @@ public class RuntimeNavigationBuilder {
             // do nothing
         }
 
+        public List<NavGroup> getGroups() {
+            return groups;
+        }
+
         public List<LayoutTemplate> getOrphanItems() {
             return orphanItems;
+        }
+
+        public List<String> getNotExportedPerspectives() {
+            return notExportedPerspectives;
         }
 
     }
