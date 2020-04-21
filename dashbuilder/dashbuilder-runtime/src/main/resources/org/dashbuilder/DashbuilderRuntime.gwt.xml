@@ -23,7 +23,6 @@
 	<inherits name="org.dashbuilder.ServicesAPI" />
 	<inherits name="org.dashbuilder.DatasetAPI" />
 	<inherits name="org.dashbuilder.DatasetShared" />
-	<inherits name="org.dashbuilder.DatasetClient" />
 	<inherits name="org.dashbuilder.NavigationAPI" />
 	<inherits name="org.dashbuilder.NavigationClient" />
 	<inherits name="org.dashbuilder.DisplayerAPI" />

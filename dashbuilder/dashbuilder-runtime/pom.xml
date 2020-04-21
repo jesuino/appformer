@@ -150,18 +150,6 @@
 
 		<dependency>
 			<groupId>org.dashbuilder</groupId>
-			<artifactId>dashbuilder-dataset-client</artifactId>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.errai</groupId>
-					<artifactId>errai-security-server</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.dashbuilder</groupId>
 			<artifactId>dashbuilder-displayer-api</artifactId>
 		</dependency>
 
@@ -192,12 +180,6 @@
 		<dependency>
 			<groupId>org.dashbuilder</groupId>
 			<artifactId>dashbuilder-renderer-c3</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.dashbuilder</groupId>
-			<artifactId>dashbuilder-renderer-chartjs</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -720,7 +702,6 @@
 						<compileSourcesArtifact>org.dashbuilder:dashbuilder-services-api</compileSourcesArtifact>
 						<compileSourcesArtifact>org.kie.soup:kie-soup-dataset-api</compileSourcesArtifact>
 						<compileSourcesArtifact>org.kie.soup:kie-soup-dataset-shared</compileSourcesArtifact>
-						<compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-client</compileSourcesArtifact>
 						<compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-api</compileSourcesArtifact>
 						<compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-client</compileSourcesArtifact>
 						<compileSourcesArtifact>org.dashbuilder:dashbuilder-displayer-screen</compileSourcesArtifact>
