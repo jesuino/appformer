@@ -44,18 +44,21 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 @ApplicationScoped
 public class RuntimeNavigationBuilder {
 
+    static final String ORPHAN_GROUP_ID = "__runtime_dashboards";
+    static final String ORPHAN_GROUP_NAME = "Runtime Dashboards";
+    static final String ORPHAN_GROUP_DESC = "Dashboards";
+
     Logger logger = LoggerFactory.getLogger(RuntimeNavigationBuilder.class);
 
     public NavTree build(Optional<String> navTreeJson, List<LayoutTemplate> layoutTemplates) {
         if (navTreeJson.isPresent()) {
-            return buildPrunedTree(navTreeJson, layoutTemplates);
+            NavTree navTree = NavTreeJSONMarshaller.get().fromJson(navTreeJson.get());
+            return buildRuntimeTree(navTree, layoutTemplates);
         }
-
         return navTreeForTemplates(layoutTemplates);
     }
 
-    private NavTree buildPrunedTree(Optional<String> navTreeJson, List<LayoutTemplate> layoutTemplates) {
-        NavTree navTree = NavTreeJSONMarshaller.get().fromJson(navTreeJson.get());
+    protected NavTree buildRuntimeTree(NavTree navTree, List<LayoutTemplate> layoutTemplates) {
         RuntimeNavItemVisitor visitor = new RuntimeNavItemVisitor(layoutTemplates);
 
         navTree.accept(visitor);
@@ -85,7 +88,7 @@ public class RuntimeNavigationBuilder {
     }
 
     private NavTreeBuilder buildLayoutTemplatesGroup(List<LayoutTemplate> layoutTemplates, NavTreeBuilder treeBuilder) {
-        treeBuilder.group("dashboards", "Runtime Dashboards", "Dashboards", false);
+        treeBuilder.group(ORPHAN_GROUP_ID, ORPHAN_GROUP_NAME, ORPHAN_GROUP_DESC, false);
         layoutTemplates.forEach(lt -> {
             NavItemContext ctx = NavWorkbenchCtx.perspective(lt.getName());
             treeBuilder.item(lt.getName(), lt.getName(), "", true, ctx);

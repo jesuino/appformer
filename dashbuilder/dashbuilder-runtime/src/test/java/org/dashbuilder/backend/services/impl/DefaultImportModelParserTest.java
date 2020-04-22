@@ -63,16 +63,15 @@ public class DefaultImportModelParserTest {
         String csv1Content = datasets.stream().filter(csvMatcher).findAny().get().getContent();
         assertEquals("ds1content", ds1Content);
         assertEquals("csv1content", csv1Content);
-        
+
         List<PerspectiveContent> perspectives = importModel.getPerspectives();
         assertEquals(1, perspectives.size());
-        
+
         PerspectiveContent perspectiveContent = perspectives.get(0);
         assertEquals("page1", perspectiveContent.getId());
         assertEquals("page1_content", perspectiveContent.getContent());
-        
+
         assertEquals("navigation", importModel.getNavigationJSON().get());
-        
     }
 
 }
