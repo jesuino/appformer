@@ -21,6 +21,9 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Holds Runtime System properties
  *
@@ -28,15 +31,22 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class RuntimeOptions {
 
+    Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
+
     private static final String IMPORTS_BASE_DIR_PROP = "org.dashbuilder.import.base.dir";
+
+    private static final String IMPORT_FILE_LOCATION_PROP = "dashbuilder.runtime.import";
+
+    private static final String UPLOAD_SIZE_PROP = "dashbuilder.runtime.upload.size";
 
     private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
 
-    private static final String IMPORT_FILE_LOCATION_PROP = "dashbuilder.runtime.import";
+    private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
 
     private boolean multipleImport;
     private String importFileLocation;
     private String importsBaseDir;
+    private int uploadSize;
 
     @PostConstruct
     public void init() {
@@ -44,6 +54,17 @@ public class RuntimeOptions {
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
         multipleImport = Boolean.parseBoolean(multipleImportStr);
+        uploadSize = DEFAULT_UPLOAD_SIZE;
+        
+        String uploadSizeStr = System.getProperty(UPLOAD_SIZE_PROP);
+        if (uploadSizeStr != null) {
+            try {
+                uploadSize = 1024 * Integer.parseInt(uploadSizeStr);
+            } catch (Exception e) {
+                logger.warn("Not able to parse upload size {}", uploadSizeStr);
+                logger.debug("Not able to parse upload size {}", uploadSizeStr, e);
+            }
+        }
     }
 
     public boolean isMultipleImport() {
@@ -56,6 +77,10 @@ public class RuntimeOptions {
 
     public String getImportsBaseDir() {
         return importsBaseDir;
+    }
+
+    public int getUploadSize() {
+        return uploadSize;
     }
 
 }

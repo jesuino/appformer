@@ -29,16 +29,16 @@ import org.dashbuilder.shared.model.ImportModel;
 import org.dashbuilder.shared.model.PerspectiveContent;
 import org.dashbuilder.shared.service.ImportModelParser;
 
+import static org.dashbuilder.shared.model.ImportDefinitions.DATASET_PREFIX;
+import static org.dashbuilder.shared.model.ImportDefinitions.NAVIGATION_FILE;
+import static org.dashbuilder.shared.model.ImportDefinitions.PERSPECTIVE_SUFFIX;
+
 /**
  * Parses a exported zip file from Transfer Services into ImportModel.
  *
  */
 @ApplicationScoped
 public class ImportModelParserImpl implements ImportModelParser {
-
-    private static final String DATASET_PREFIX = "dashbuilder/datasets/definitions/";
-    private static final String PERSPECTIVE_SUFFIX = "perspective_layout";
-    private static final String NAVIGATION_PREFIX = "dashbuilder/navigation/navigation/navtree.json";
 
     @Override
     public ImportModel parse(InputStream is) {
@@ -66,7 +66,7 @@ public class ImportModelParserImpl implements ImportModelParser {
                         importModel.getPerspectives().add(perspectiveContent);
                     }
 
-                    if (entryName.equalsIgnoreCase(NAVIGATION_PREFIX)) {
+                    if (entryName.equalsIgnoreCase(NAVIGATION_FILE)) {
                         String navigationJSON = entryContent(entry, zis);
                         importModel.setNavigationJSON(navigationJSON);
                     }

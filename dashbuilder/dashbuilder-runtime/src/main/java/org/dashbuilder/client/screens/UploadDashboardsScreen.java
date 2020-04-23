@@ -29,6 +29,7 @@ import elemental2.dom.HTMLInputElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
 import org.dashbuilder.client.jsinterop.RequestInitFactory;
+import org.dashbuilder.shared.resources.ResourceDefinitions;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -73,15 +74,14 @@ public class UploadDashboardsScreen extends Composite {
             RequestInit request = RequestInitFactory.create();
             request.setMethod("POST");
             request.setBody(new FormData(uploadForm));
-            DomGlobal.window.fetch("/rest/upload", request).then((Response response) -> {
-                return response.text().then(id -> {
-                    DomGlobal.window.location.assign("/dashbuilder.html?import=" + id);
-                    return null;
-                });
-            }, error -> {
-                DomGlobal.window.alert(error);
-                return null;
-            });
+            DomGlobal.window.fetch(ResourceDefinitions.UPLOAD_RESOURCE, request)
+                            .then((Response response) -> response.text().then(id -> {
+                                DomGlobal.window.location.assign("/dashbuilder.html?import=" + id);
+                                return null;
+                            }), error -> {
+                                DomGlobal.window.alert(error);
+                                return null;
+                            });
             return null;
         };
     }

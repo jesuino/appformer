@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.backend.resources;
+package org.dashbuilder.shared.model;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+/**
+ * Holds Constants for the Import ZIP
+ *
+ */
+public class ImportDefinitions {
 
-import org.dashbuilder.shared.resources.ResourceDefinitions;
+    public static final String DATASET_PREFIX = "dashbuilder/datasets/definitions/";
+    public static final String NAVIGATION_PREFIX = "dashbuilder/navigation/navigation/";
+    public static final String PERSPECTIVE_PREFIX = "dashbuilder/navigation/navigation/";
 
-@ApplicationPath(ResourceDefinitions.REST_BASE_URL)
-public class RuntimeJaxAppApp extends Application {
+    public static final String PERSPECTIVE_SUFFIX = "perspective_layout";
+
+    public static final String NAVIGATION_FILE = NAVIGATION_PREFIX + "navtree.json";
+
+    private ImportDefinitions() {
+
+    }
 
 }

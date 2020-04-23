@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.backend.resources;
+package org.dashbuilder.shared.service;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+/**
+ * Validates an imported ZIP file
+ *
+ */
+public interface ImportValidationService {
 
-import org.dashbuilder.shared.resources.ResourceDefinitions;
-
-@ApplicationPath(ResourceDefinitions.REST_BASE_URL)
-public class RuntimeJaxAppApp extends Application {
+    /**
+     * 
+     * Validate the file from the given path. 
+     * @param file
+     * The File path
+     * @return
+     * true if the file is valid, false otherwise;
+     */
+    public boolean validate(String file);
 
 }

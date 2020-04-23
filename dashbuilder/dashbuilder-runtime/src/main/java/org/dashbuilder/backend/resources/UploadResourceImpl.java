@@ -26,9 +26,13 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.dashbuilder.backend.RuntimeOptions;
+import org.dashbuilder.shared.resources.ResourceDefinitions;
+import org.dashbuilder.shared.service.ImportValidationService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +41,17 @@ import org.slf4j.LoggerFactory;
  * Resource to receive new imports
  *
  */
-@Path("upload")
 @ApplicationScoped
-public class UploadResource {
+@Path(ResourceDefinitions.UPLOAD_RESOURCE)
+public class UploadResourceImpl {
 
-    Logger logger = LoggerFactory.getLogger(UploadResource.class);
+    Logger logger = LoggerFactory.getLogger(UploadResourceImpl.class);
 
     @Inject
     RuntimeOptions runtimeOptions;
+
+    @Inject
+    ImportValidationService importValidationService;
 
     @PostConstruct
     public void createBaseDir() throws IOException {
@@ -57,15 +64,35 @@ public class UploadResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String uploadFile(@MultipartForm FileUploadModel form) throws IOException {
-        logger.info("Uploading file with size {} bytes", form.getFileData().length);
+        checkUploadSize(form);
 
-        // TODO: validate file?
-        // TODO: limit size?
+        logger.info("Uploading file with size {} bytes", form.getFileData().length);
 
         String fileId = System.currentTimeMillis() + "";
         String filePath = String.join("/", runtimeOptions.getImportsBaseDir(), fileId).concat(".zip");
-        Files.write(Paths.get(filePath), form.getFileData());
+        java.nio.file.Path path = Paths.get(filePath);
+
+        Files.write(path, form.getFileData());
+
+        validateImportContent(path);
+
         return fileId;
+    }
+
+    private void validateImportContent(java.nio.file.Path path) throws IOException {
+        String filePath = path.toFile().getPath();
+        if (!importValidationService.validate(filePath)) {
+            Files.delete(path);
+            throw new WebApplicationException("Not a valid file structure.", Status.BAD_REQUEST);
+        }
+    }
+
+    private void checkUploadSize(FileUploadModel form) {
+        int uploadSize = form.getFileData().length;
+        if (uploadSize > runtimeOptions.getUploadSize()) {
+            logger.warn("Stopping upload of size {}. Max size is {}", uploadSize, runtimeOptions.getUploadSize());
+            throw new WebApplicationException("Upload is too big.", Status.BAD_REQUEST);
+        }
     }
 
 }
