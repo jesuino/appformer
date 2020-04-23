@@ -32,9 +32,13 @@ import org.dashbuilder.shared.model.DataSetContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Listen for new dataset contents and register it accordingly
+ *
+ */
 @ApplicationScoped
 public class DataSetContentListener {
-    
+
     Logger logger = LoggerFactory.getLogger(DataSetContentListener.class);
 
     @Inject
@@ -43,7 +47,7 @@ public class DataSetContentListener {
     @Inject
     RuntimeCSVFileStorage storage;
 
-    @Inject 
+    @Inject
     RuntimeDataSetProviderRegistry runtimeDataSetProviderRegistry;
 
     DataSetDefJSONMarshaller defMarshaller;

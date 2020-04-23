@@ -31,7 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.dashbuilder.backend.RuntimeOptions;
-import org.dashbuilder.shared.resources.ResourceDefinitions;
 import org.dashbuilder.shared.service.ImportValidationService;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @ApplicationScoped
-@Path(ResourceDefinitions.UPLOAD_RESOURCE)
+@Path("/upload")
 public class UploadResourceImpl {
 
     Logger logger = LoggerFactory.getLogger(UploadResourceImpl.class);
@@ -52,7 +51,7 @@ public class UploadResourceImpl {
 
     @Inject
     ImportValidationService importValidationService;
-
+    
     @PostConstruct
     public void createBaseDir() throws IOException {
         java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());

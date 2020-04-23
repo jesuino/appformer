@@ -21,19 +21,19 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
-import org.dashbuilder.shared.service.ImportModelRegistry;
+import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
 @Startup
 @ApplicationScoped
-public class ImportModelLoader {
+public class RuntimeModelLoader {
 
-    Logger logger = LoggerFactory.getLogger(ImportModelLoader.class);
+    Logger logger = LoggerFactory.getLogger(RuntimeModelLoader.class);
 
     @Inject
-    ImportModelRegistry importModelRegistry;
+    RuntimeModelRegistry runtimeModelRegistry;
 
     @Inject
     RuntimeOptions runtimeOptions;
@@ -42,12 +42,12 @@ public class ImportModelLoader {
     private void doInitialImport() {
         runtimeOptions.importFileLocation().ifPresent(importFile -> {
             logger.info("Importing file {}", importFile);
-            importModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
-            importModelRegistry.registerFile(importFile);
+            runtimeModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
+            runtimeModelRegistry.registerFile(importFile);
         });
 
         if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
-            importModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
+            runtimeModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
         }
     }
 

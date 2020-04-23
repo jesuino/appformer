@@ -32,56 +32,59 @@ import javax.inject.Inject;
 
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
-import org.dashbuilder.shared.model.ImportModel;
-import org.dashbuilder.shared.service.ImportModelParser;
-import org.dashbuilder.shared.service.ImportModelRegistry;
+import org.dashbuilder.shared.model.RuntimeModel;
+import org.dashbuilder.shared.service.RuntimeModelParser;
+import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class ImportModelRegistryImpl implements ImportModelRegistry {
+public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
 
-    Logger logger = LoggerFactory.getLogger(ImportModelRegistryImpl.class);
+    Logger logger = LoggerFactory.getLogger(RuntimeModelRegistryImpl.class);
 
-    Map<String, ImportModel> importModels;
+    Map<String, RuntimeModel> runtimeModels;
 
     DashbuilderRuntimeMode mode = DashbuilderRuntimeMode.SINGLE_IMPORT;
 
     @Inject
-    ImportModelParser parser;
+    RuntimeModelParser parser;
 
     @Inject
     Event<NewDataSetContentEvent> newDataSetContentEvent;
 
     @PostConstruct
     public void init() {
-        importModels = new HashMap<>();
+        runtimeModels = new HashMap<>();
     }
 
     @Override
-    public Optional<ImportModel> single() {
-        return importModels.values().stream().findFirst();
+    public Optional<RuntimeModel> single() {
+        return runtimeModels.values().stream().findFirst();
     }
 
     @Override
-    public Optional<ImportModel> get(String id) {
+    public Optional<RuntimeModel> get(String id) {
         if (mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
-            return Optional.ofNullable(importModels.get(id));
+            return Optional.ofNullable(runtimeModels.get(id));
         }
         return single();
     }
 
     @Override
-    public Optional<ImportModel> registerFile(String fileName) {
+    public Optional<RuntimeModel> registerFile(String fileName) {
+        
         if (fileName == null || fileName.trim().isEmpty()) {
             logger.warn("Invalid file name {}", fileName);
             return Optional.empty();
         }
+        
         File file = new File(fileName);
         if (!file.exists()) {
-            logger.debug("File does not exist {}", fileName);
-            throw new IllegalArgumentException("File does not exist: " + fileName);
+            logger.warn("File does not exist {}", fileName);
+            return Optional.empty();
         }
+        
         try (FileInputStream fis = new FileInputStream(fileName)) {
             String importId = file.getName().replaceAll(".zip", "");
             return register(importId, fis);
@@ -98,7 +101,7 @@ public class ImportModelRegistryImpl implements ImportModelRegistry {
 
     @Override
     public boolean isEmpty() {
-        return importModels.isEmpty();
+        return runtimeModels.isEmpty();
     }
 
     @Override
@@ -106,18 +109,17 @@ public class ImportModelRegistryImpl implements ImportModelRegistry {
         return mode;
     }
 
-    public Optional<ImportModel> register(String id, InputStream fileStream) {
+    public Optional<RuntimeModel> register(String id, InputStream fileStream) {
         if (!acceptingNewImports()) {
             throw new IllegalArgumentException("New imports are not allowed in mode " + mode);
         }
         try {
-            ImportModel importModel = parser.parse(fileStream);
+            RuntimeModel runtimeModel = parser.parse(fileStream);
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }
-            importModels.put(id, importModel);
-            newDataSetContentEvent.fire(new NewDataSetContentEvent(importModel.getDatasets()));
-            return Optional.of(importModel);
+            runtimeModels.put(id, runtimeModel);
+            return Optional.of(runtimeModel);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error parsing import model.");
         }

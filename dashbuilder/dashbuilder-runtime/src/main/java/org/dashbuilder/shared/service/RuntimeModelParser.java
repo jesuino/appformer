@@ -18,14 +18,14 @@ package org.dashbuilder.shared.service;
 
 import java.io.InputStream;
 
-import org.dashbuilder.shared.model.ImportModel;
+import org.dashbuilder.shared.model.RuntimeModel;
 
 /**
- * Parses a ImportModel content to the object ImportModel
+ * Parses an import content to RuntimeModel
  *
  */
-public interface ImportModelParser {
+public interface RuntimeModelParser {
 
-    public ImportModel parse(InputStream is);
+    public RuntimeModel parse(InputStream is);
 
 }

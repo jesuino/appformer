@@ -19,7 +19,7 @@ package org.dashbuilder.shared.service;
 import java.util.Optional;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
-import org.dashbuilder.shared.model.ImportModel;
+import org.dashbuilder.shared.model.RuntimeModel;
 
 import static org.dashbuilder.shared.model.DashbuilderRuntimeMode.MULTIPLE_IMPORT;
 
@@ -27,7 +27,7 @@ import static org.dashbuilder.shared.model.DashbuilderRuntimeMode.MULTIPLE_IMPOR
  * Provides access to a saved ImportModelService
  *
  */
-public interface ImportModelRegistry {
+public interface RuntimeModelRegistry {
 
     public default boolean acceptingNewImports() {
         return getMode() == MULTIPLE_IMPORT ||
@@ -39,7 +39,7 @@ public interface ImportModelRegistry {
      * 
      * @return
      */
-    Optional<ImportModel> single();
+    Optional<RuntimeModel> single();
     
 
     /**
@@ -60,7 +60,7 @@ public interface ImportModelRegistry {
      * @param id
      * @return
      */
-    public Optional<ImportModel> get(String id);
+    public Optional<RuntimeModel> get(String id);
 
     /**
      * Sets this runtime mode.
@@ -75,6 +75,6 @@ public interface ImportModelRegistry {
      * @param filePath
      * The path to the file
      */
-    public Optional<ImportModel> registerFile(String filePath);
+    public Optional<RuntimeModel> registerFile(String filePath);
 
 }

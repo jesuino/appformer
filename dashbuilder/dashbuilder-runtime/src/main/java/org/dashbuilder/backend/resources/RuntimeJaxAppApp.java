@@ -19,9 +19,7 @@ package org.dashbuilder.backend.resources;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import org.dashbuilder.shared.resources.ResourceDefinitions;
-
-@ApplicationPath(ResourceDefinitions.REST_BASE_URL)
+@ApplicationPath("/rest")
 public class RuntimeJaxAppApp extends Application {
 
 }

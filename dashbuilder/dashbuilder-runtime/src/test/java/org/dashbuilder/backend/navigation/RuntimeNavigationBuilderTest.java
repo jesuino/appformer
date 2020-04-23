@@ -18,7 +18,6 @@ package org.dashbuilder.backend.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.dashbuilder.navigation.NavGroup;
 import org.dashbuilder.navigation.NavItem;
@@ -169,7 +168,7 @@ public class RuntimeNavigationBuilderTest {
         templates.add(lt1);
         templates.add(lt2);
         templates.add(lt3);
-        NavTree runtimeTree = runtimeNavigationBuilder.build(Optional.empty(), templates);
+        NavTree runtimeTree = runtimeNavigationBuilder.build(null, templates);
 
         NavGroup orphanItemsGroup = (NavGroup) runtimeTree.getItemById(RuntimeNavigationBuilder.ORPHAN_GROUP_ID);
         assertNotNull(orphanItemsGroup);

@@ -18,69 +18,96 @@ package org.dashbuilder.backend.services.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.dashbuilder.backend.navigation.RuntimeNavigationBuilder;
+import org.dashbuilder.navigation.NavTree;
+import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DataSetContent;
 import org.dashbuilder.shared.model.DataSetContentType;
-import org.dashbuilder.shared.model.ImportModel;
-import org.dashbuilder.shared.model.PerspectiveContent;
-import org.dashbuilder.shared.service.ImportModelParser;
+import org.dashbuilder.shared.model.RuntimeModel;
+import org.dashbuilder.shared.service.RuntimeModelParser;
+import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
 import static org.dashbuilder.shared.model.ImportDefinitions.DATASET_PREFIX;
 import static org.dashbuilder.shared.model.ImportDefinitions.NAVIGATION_FILE;
 import static org.dashbuilder.shared.model.ImportDefinitions.PERSPECTIVE_SUFFIX;
 
 /**
- * Parses a exported zip file from Transfer Services into ImportModel.
+ * Parses a exported zip file from Transfer Services into RuntimeModel.
  *
  */
 @ApplicationScoped
-public class ImportModelParserImpl implements ImportModelParser {
+public class RuntimeModelParserImpl implements RuntimeModelParser {
+
+    @Inject
+    Event<NewDataSetContentEvent> newDataSetContentEvent;
+
+    @Inject
+    RuntimeNavigationBuilder runtimeNavigationBuilder;
+
+    Gson gson;
+
+    @PostConstruct
+    void init() {
+        gson = new GsonBuilder().create();
+    }
 
     @Override
-    public ImportModel parse(InputStream is) {
+    public RuntimeModel parse(InputStream is) {
         try {
-            return retrieveImportModel(is);
+            return retrieveRuntimeModel(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected ImportModel retrieveImportModel(InputStream is) throws IOException {
-        ImportModel importModel = new ImportModel();
+    protected RuntimeModel retrieveRuntimeModel(InputStream is) throws IOException {
+        List<DataSetContent> datasetContents = new ArrayList<>();
+        List<LayoutTemplate> layoutTemplates = new ArrayList<>();
+        Optional<String> navTreeOp = Optional.empty();
         try (ZipInputStream zis = new ZipInputStream(is)) {
-            ZipEntry entry = zis.getNextEntry();
-            while (entry != null) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
                 if (!entry.isDirectory()) {
                     String entryName = entry.getName();
                     if (entryName.startsWith(DATASET_PREFIX)) {
-                        DataSetContent dataSetContent = retrieveDataSetContent(entry, zis);
-                        importModel.getDatasets().add(dataSetContent);
+                        datasetContents.add(retrieveDataSetContent(entry, zis));
                     }
 
                     if (entryName.endsWith(PERSPECTIVE_SUFFIX)) {
-                        PerspectiveContent perspectiveContent = retrievePerspectiveContent(entry, zis);
-                        importModel.getPerspectives().add(perspectiveContent);
+                        layoutTemplates.add(retrieveLayoutTemplate(zis));
                     }
 
                     if (entryName.equalsIgnoreCase(NAVIGATION_FILE)) {
-                        String navigationJSON = entryContent(entry, zis);
-                        importModel.setNavigationJSON(navigationJSON);
+                        navTreeOp = Optional.of(nextEntryContent(zis));
                     }
                 }
-                entry = zis.getNextEntry();
             }
         }
-        return importModel;
+
+        if (! datasetContents.isEmpty()) {
+            newDataSetContentEvent.fire(new NewDataSetContentEvent(datasetContents));
+        }
+        NavTree navTree = runtimeNavigationBuilder.build(navTreeOp, layoutTemplates);
+        
+        return new RuntimeModel(navTree, layoutTemplates);
     }
 
-    private PerspectiveContent retrievePerspectiveContent(ZipEntry entry, ZipInputStream zis) {
-        String id = entry.getName().split("/")[2];
-        String content = entryContent(entry, zis);
-        return new PerspectiveContent(id, content);
+    private LayoutTemplate retrieveLayoutTemplate(ZipInputStream zis) {
+        String content = nextEntryContent(zis);
+        return gson.fromJson(content, LayoutTemplate.class);
     }
 
     private DataSetContent retrieveDataSetContent(ZipEntry entry, ZipInputStream zis) {
@@ -88,11 +115,11 @@ public class ImportModelParserImpl implements ImportModelParser {
         String[] nameParts = fileName.split("\\.");
         String id = nameParts[0];
         String ext = nameParts[1];
-        String content = entryContent(entry, zis);
+        String content = nextEntryContent(zis);
         return new DataSetContent(id, content, DataSetContentType.fromFileExtension(ext));
     }
 
-    private String entryContent(ZipEntry entry, ZipInputStream zis) {
+    private String nextEntryContent(ZipInputStream zis) {
         try {
             final int BUFFER_SIZE = 1024;
             byte[] buffer = new byte[BUFFER_SIZE];
