@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.model.RuntimeModel;
+import org.dashbuilder.shared.service.ImportValidationService;
 import org.dashbuilder.shared.service.RuntimeModelParser;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
@@ -52,6 +53,9 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
 
     @Inject
     Event<NewDataSetContentEvent> newDataSetContentEvent;
+    
+    @Inject
+    ImportValidationService importValidationService;
 
     @PostConstruct
     public void init() {
@@ -75,14 +79,19 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
     public Optional<RuntimeModel> registerFile(String fileName) {
         
         if (fileName == null || fileName.trim().isEmpty()) {
-            logger.warn("Invalid file name {}", fileName);
-            return Optional.empty();
+            logger.error("Invalid file name: {}", fileName);
+            throw new IllegalArgumentException("Invalid file name.");
         }
         
         File file = new File(fileName);
         if (!file.exists()) {
-            logger.warn("File does not exist {}", fileName);
-            return Optional.empty();
+            logger.error("File does not exist: {}", fileName);
+            throw new IllegalArgumentException("File does not exist");
+        }
+        
+        if (!importValidationService.validate(fileName)) {
+            logger.error("File does not have a valid structure: {}", fileName);
+            throw new IllegalArgumentException("Not a valid file structure.");
         }
         
         try (FileInputStream fis = new FileInputStream(fileName)) {
@@ -124,5 +133,5 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
             throw new IllegalArgumentException("Error parsing import model.");
         }
     }
-
+    
 }
