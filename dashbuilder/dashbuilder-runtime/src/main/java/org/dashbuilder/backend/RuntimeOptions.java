@@ -23,6 +23,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.data.Pair;
+import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.Paths;
 
 /**
  * Holds Runtime System properties
@@ -39,11 +42,14 @@ public class RuntimeOptions {
 
     private static final String UPLOAD_SIZE_PROP = "dashbuilder.runtime.upload.size";
 
+    private static final String ALLOW_EXTERNAL_FILE_REGISTER_PROP = "dashbuilder.runtime.allowExternal";
+
     private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
 
     private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
 
     private boolean multipleImport;
+    private boolean allowExternal;
     private String importFileLocation;
     private String importsBaseDir;
     private int uploadSize;
@@ -51,11 +57,15 @@ public class RuntimeOptions {
     @PostConstruct
     public void init() {
         String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, "false");
+        String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, "true");
+
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
         multipleImport = Boolean.parseBoolean(multipleImportStr);
+        allowExternal = Boolean.parseBoolean(allowExternalStr);
+
         uploadSize = DEFAULT_UPLOAD_SIZE;
-        
+
         String uploadSizeStr = System.getProperty(UPLOAD_SIZE_PROP);
         if (uploadSizeStr != null) {
             try {
@@ -65,6 +75,22 @@ public class RuntimeOptions {
                 logger.debug("Not able to parse upload size {}", uploadSizeStr, e);
             }
         }
+    }
+
+    public Optional<String> modelPath(String id) {
+        String filePath = buildFilePath(id);
+        return Files.exists(Paths.get(filePath)) ? Optional.of(filePath) : Optional.empty();
+    }
+
+    /**
+     * Generates a new valid file path
+     * 
+     * @return
+     */
+    public Pair<String, String> newFilePath() {
+        String fileId = System.currentTimeMillis() + "";
+        String filePath = buildFilePath(fileId);
+        return Pair.newPair(fileId, filePath);
     }
 
     public boolean isMultipleImport() {
@@ -81,6 +107,15 @@ public class RuntimeOptions {
 
     public int getUploadSize() {
         return uploadSize;
+    }
+
+    public boolean isAllowExternal() {
+        return true;
+        //return allowExternal;
+    }
+
+    private String buildFilePath(String fileId) {
+        return String.join("/", getImportsBaseDir(), fileId).concat(".zip");
     }
 
 }

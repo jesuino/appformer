@@ -34,6 +34,7 @@ import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.data.Pair;
 
 /**
  * Resource to receive new imports
@@ -71,14 +72,13 @@ public class UploadResourceImpl {
 
         logger.info("Uploading file with size {} bytes", form.getFileData().length);
 
-        String fileId = System.currentTimeMillis() + "";
-        String filePath = String.join("/", runtimeOptions.getImportsBaseDir(), fileId).concat(".zip");
-        java.nio.file.Path path = Paths.get(filePath);
+        Pair<String, String> newImportInfo = runtimeOptions.newFilePath();
+        java.nio.file.Path path = Paths.get(newImportInfo.getK2());
 
         Files.write(path, form.getFileData());
 
         try {
-            runtimeModelRegistry.registerFile(filePath);
+            runtimeModelRegistry.registerFile(newImportInfo.getK2());
         } catch (Exception e) {
             Files.delete(path);
             logger.error("Error uploading file", e);
@@ -87,7 +87,7 @@ public class UploadResourceImpl {
                            .build();
         }
 
-        return Response.ok(fileId).build();
+        return Response.ok(newImportInfo.getK1()).build();
     }
 
 }

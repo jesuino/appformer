@@ -16,6 +16,15 @@
 
 package org.dashbuilder.backend.remote.services;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -27,29 +36,91 @@ import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uberfire.commons.data.Pair;
 
 @Service
 @ApplicationScoped
 public class RuntimeModelServiceImpl implements RuntimeModelService {
+
+    Logger logger = LoggerFactory.getLogger(RuntimeModelServiceImpl.class);
 
     @Inject
     RuntimeModelRegistry importModelRegistry;
 
     @Inject
     RuntimeNavigationBuilder runtimeNavigationBuilder;
-    
+
     @Inject
     RuntimeOptions runtimeOptions;
 
     @Override
     public Optional<RuntimeModel> getRuntimeModel(String exportId) {
-        Optional<RuntimeModel> runtimeModelOp = importModelRegistry.get(exportId);
-
-        if (!runtimeModelOp.isPresent() && exportId != null) {
-            String fileName = String.join("/", runtimeOptions.getImportsBaseDir(), exportId).concat(".zip");
-            runtimeModelOp = importModelRegistry.registerFile(fileName);
+        if (exportId == null) {
+            return importModelRegistry.single();
         }
-        return runtimeModelOp;
+        
+        Optional<RuntimeModel> runtimeModelOp = importModelRegistry.get(exportId);
+        if (runtimeModelOp.isPresent()) {
+            return runtimeModelOp;
+        }
+        
+        // if it is an existing file
+        Optional<String> modelPath = runtimeOptions.modelPath(exportId);  
+        if (modelPath.isPresent()) {
+            return importModelRegistry.registerFile(modelPath.get());
+        }
+
+        // if it is an external file
+        if (runtimeOptions.isAllowExternal()) {
+            // This logic could move to a new file like modelIO which could be used in registry instead here
+            Pair<String, String> newImportInfo = null;
+            try {
+                URL url = new URL(exportId);
+                newImportInfo = downloadFile(url.openStream());
+                return importModelRegistry.registerFile(newImportInfo.getK2());
+            } catch (Exception e) {
+                removeTempFile(newImportInfo);
+                throw new IllegalArgumentException("Error downloading file " + exportId, e);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private Pair<String, String> downloadFile(InputStream is) {
+        final Pair<String, String> newFilePath = runtimeOptions.newFilePath();
+        int totalBytes = 0;
+        final int pageSize = 1024;
+        String filePath = newFilePath.getK2();
+        try (BufferedInputStream in = new BufferedInputStream(is);
+                FileOutputStream fos = new FileOutputStream(filePath)) {
+            byte dataBuffer[] = new byte[pageSize];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, pageSize)) != -1) {
+                fos.write(dataBuffer, 0, bytesRead);
+                totalBytes += pageSize;
+                if (totalBytes > runtimeOptions.getUploadSize()) {
+                    Files.deleteIfExists(Paths.get(filePath));
+                    logger.error("Size file is bigger than max upload size {}", runtimeOptions.getUploadSize());
+                    throw new IllegalArgumentException("External file size is too big.");
+                }
+            }
+            return newFilePath;
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Not able to download file", e);
+        }
+    }
+
+    private void removeTempFile(Pair<String, String> newImportInfo) {
+        if (newImportInfo != null) {
+            try {
+                Files.deleteIfExists(Paths.get(newImportInfo.getK2()));
+            } catch (Exception e) {
+                logger.error("Error deleting file", e);
+            }
+        }
     }
 
 }

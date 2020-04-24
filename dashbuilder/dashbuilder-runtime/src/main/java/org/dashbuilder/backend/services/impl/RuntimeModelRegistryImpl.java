@@ -77,7 +77,7 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
 
     @Override
     public Optional<RuntimeModel> registerFile(String fileName) {
-        
+        // it could be possible to NOT STORE models
         if (fileName == null || fileName.trim().isEmpty()) {
             logger.error("Invalid file name: {}", fileName);
             throw new IllegalArgumentException("Invalid file name.");
