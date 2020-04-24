@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,14 +61,14 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
         if (exportId == null) {
             return importModelRegistry.single();
         }
-        
+
         Optional<RuntimeModel> runtimeModelOp = importModelRegistry.get(exportId);
         if (runtimeModelOp.isPresent()) {
             return runtimeModelOp;
         }
-        
+
         // if it is an existing file
-        Optional<String> modelPath = runtimeOptions.modelPath(exportId);  
+        Optional<String> modelPath = runtimeOptions.modelPath(exportId);
         if (modelPath.isPresent()) {
             return importModelRegistry.registerFile(modelPath.get());
         }
@@ -75,13 +76,13 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
         // if it is an external file
         if (runtimeOptions.isAllowExternal()) {
             // This logic could move to a new file like modelIO which could be used in registry instead here
-            Pair<String, String> newImportInfo = null;
+            String newImportPath = null;
             try {
                 URL url = new URL(exportId);
-                newImportInfo = downloadFile(url.openStream());
-                return importModelRegistry.registerFile(newImportInfo.getK2());
+                newImportPath = downloadFile(url);
+                return importModelRegistry.registerFile(newImportPath);
             } catch (Exception e) {
-                removeTempFile(newImportInfo);
+                removeTempFile(newImportPath);
                 throw new IllegalArgumentException("Error downloading file " + exportId, e);
             }
         }
@@ -89,14 +90,15 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
         return Optional.empty();
     }
 
-    private Pair<String, String> downloadFile(InputStream is) {
-        final Pair<String, String> newFilePath = runtimeOptions.newFilePath();
+    private String downloadFile(URL url) throws Exception {
+        // consider generate better model ids for URLs
+        final String modelId = Math.abs(url.toURI().hashCode()) + "";
+        final String filePath = runtimeOptions.buildFilePath(modelId);
         int totalBytes = 0;
         final int pageSize = 1024;
-        String filePath = newFilePath.getK2();
-        try (BufferedInputStream in = new BufferedInputStream(is);
+        try (BufferedInputStream in = new BufferedInputStream(url.openStream());
                 FileOutputStream fos = new FileOutputStream(filePath)) {
-            byte dataBuffer[] = new byte[pageSize];
+            byte[] dataBuffer = new byte[pageSize];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, pageSize)) != -1) {
                 fos.write(dataBuffer, 0, bytesRead);
@@ -107,16 +109,16 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
                     throw new IllegalArgumentException("External file size is too big.");
                 }
             }
-            return newFilePath;
+            return filePath;
         } catch (IOException e) {
             throw new IllegalArgumentException("Not able to download file", e);
         }
     }
 
-    private void removeTempFile(Pair<String, String> newImportInfo) {
-        if (newImportInfo != null) {
+    private void removeTempFile(String filePath) {
+        if (filePath != null) {
             try {
-                Files.deleteIfExists(Paths.get(newImportInfo.getK2()));
+                Files.deleteIfExists(Paths.get(filePath));
             } catch (Exception e) {
                 logger.error("Error deleting file", e);
             }

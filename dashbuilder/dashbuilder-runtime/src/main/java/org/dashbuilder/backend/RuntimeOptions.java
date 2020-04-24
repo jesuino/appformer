@@ -16,6 +16,8 @@
 
 package org.dashbuilder.backend;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -24,8 +26,6 @@ import javax.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.data.Pair;
-import org.uberfire.java.nio.file.Files;
-import org.uberfire.java.nio.file.Paths;
 
 /**
  * Holds Runtime System properties
@@ -77,6 +77,14 @@ public class RuntimeOptions {
         }
     }
 
+    /**
+     * 
+     * Returns the model path for the given id
+     * @param id
+     * The model ID 
+     * @return
+     * An optional containing the file path or an empty optional otherwise.
+     */
     public Optional<String> modelPath(String id) {
         String filePath = buildFilePath(id);
         return Files.exists(Paths.get(filePath)) ? Optional.of(filePath) : Optional.empty();
@@ -114,7 +122,7 @@ public class RuntimeOptions {
         //return allowExternal;
     }
 
-    private String buildFilePath(String fileId) {
+    public String buildFilePath(String fileId) {
         return String.join("/", getImportsBaseDir(), fileId).concat(".zip");
     }
 
