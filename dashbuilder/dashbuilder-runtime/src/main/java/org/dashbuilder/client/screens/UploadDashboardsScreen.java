@@ -28,7 +28,6 @@ import elemental2.dom.HTMLFormElement;
 import elemental2.dom.HTMLInputElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
-import org.dashbuilder.client.jsinterop.RequestInitFactory;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -70,7 +69,7 @@ public class UploadDashboardsScreen extends Composite {
         };
 
         inputFile.onchange = e -> {
-            RequestInit request = RequestInitFactory.create();
+            RequestInit request = RequestInit.create();
             request.setMethod("POST");
             request.setBody(new FormData(uploadForm));
             DomGlobal.window.fetch("/rest/upload", request)

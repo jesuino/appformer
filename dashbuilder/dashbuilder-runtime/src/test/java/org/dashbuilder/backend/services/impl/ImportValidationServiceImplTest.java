@@ -17,7 +17,7 @@ public class ImportValidationServiceImplTest {
 
     @Test
     public void validFileTest() {
-        String file = this.getClass().getResource("/import.zip").getFile();
+        String file = this.getClass().getResource("/valid_import.zip").getFile();
         assertTrue(importValidationService.validate(file));
     }
     

@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.client.jsinterop;
+package org.dashbuilder.shared.services;
 
-import elemental2.dom.RequestInit;
-import jsinterop.base.Js;
-import jsinterop.base.JsPropertyMap;
+import java.util.Optional;
 
-public interface RequestInitFactory {
+import org.dashbuilder.shared.model.RuntimeModel;
 
-    public static RequestInit create() {
-        return Js.uncheckedCast(JsPropertyMap.of());
-    }
+/**
+ * Responsible for downloading external models and registering it
+ *
+ */
+public interface ExternalImportService {
+    
+    public Optional<RuntimeModel> registerExternalImport(String externalModelUrl);
 
 }
