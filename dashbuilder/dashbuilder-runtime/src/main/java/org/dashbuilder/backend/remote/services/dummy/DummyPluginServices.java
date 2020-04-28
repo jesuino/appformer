@@ -98,49 +98,41 @@ public class DummyPluginServices implements PluginServices {
 
     @Override
     public Plugin createNewPlugin(String name, PluginType type) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public PluginContent getPluginContent(Path path) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void deleteMedia(Media media) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public DynamicMenu getDynamicMenuContent(Path path) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Path save(Plugin plugin, String commitMessage) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public LayoutEditorModel getLayoutEditor(Path path, PluginType pluginType) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Path saveMenu(DynamicMenu menu, String commitMessage) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Path saveLayout(LayoutEditorModel layoutContent, String commitMessage) {
-        // TODO Auto-generated method stub
         return null;
     }
 

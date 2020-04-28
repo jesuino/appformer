@@ -18,6 +18,7 @@ package org.dashbuilder.client.screens;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
@@ -28,6 +29,7 @@ import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
 import org.dashbuilder.navigation.NavTree;
+import org.dashbuilder.shared.event.RuntimeModelEvent;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
@@ -74,6 +76,9 @@ public class RuntimeScreen extends Composite {
     @Inject
     LayoutGenerator layoutGenerator;
 
+    @Inject
+    Event<RuntimeModelEvent> runtimeModelEvent;
+
     @OnOpen
     public void onOpen() {
         this.hideLoading();
@@ -100,12 +105,14 @@ public class RuntimeScreen extends Composite {
         NavTree navTree = runtimeModel.getNavTree();
         Menus menus = menusHelper.buildMenusFromNavTree(navTree).build();
 
-        navigationManager.setDefaultNavTree(navTree);
         runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
 
         menuBar.clear();
         menuBar.clearContextMenu();
         menuBar.addMenus(menus);
+
+        navigationManager.setDefaultNavTree(navTree);
+        runtimeModelEvent.fire(new RuntimeModelEvent(runtimeModel));
     }
 
     private void hideLoading() {

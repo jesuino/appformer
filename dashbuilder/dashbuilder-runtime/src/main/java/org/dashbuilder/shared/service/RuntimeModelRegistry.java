@@ -16,7 +16,8 @@
 
 package org.dashbuilder.shared.service;
 
-import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
@@ -76,7 +77,6 @@ public interface RuntimeModelRegistry {
      * @param filePath
      * The path to the file
      */
-    public Optional<RuntimeModel> registerFile(String filePath);
-    
+    public Optional<RuntimeModel> registerFile(String filePath);    
 
 }

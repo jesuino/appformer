@@ -16,7 +16,6 @@
 
 package org.dashbuilder.backend.remote.services;
 
-import java.net.URL;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
