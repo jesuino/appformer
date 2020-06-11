@@ -20,8 +20,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.Window;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
+import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RuntimeScreen;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
@@ -32,6 +34,8 @@ import org.uberfire.client.workbench.Workbench;
 @Bundle("resources/i18n/AppConstants.properties")
 public class RuntimeEntryPoint {
 
+    AppConstants i18n = AppConstants.INSTANCE;
+
     @Inject
     Workbench workbench;
 
@@ -41,12 +45,22 @@ public class RuntimeEntryPoint {
     @Inject
     RuntimeScreen runtimeScreen;
 
+    @Inject
+    RuntimeCommunication runtimeCommunication;
+
     @PostConstruct
     public void startup() {
+        boolean isStandalone = Window.Location.getParameterMap().containsKey("standalone");
         workbench.addStartupBlocker(RuntimeEntryPoint.class);
         modelLoader.loadModel(model -> hideLoading(),
                               this::hideLoading,
-                              (e, t) -> this.hideLoading());
+                              (e, t) -> {
+                                  if (isStandalone) {
+                                      runtimeCommunication.showError(i18n.errorLoadingDashboards(),
+                                                                     "Error pre-loading dashboards.");
+                                  }
+                                  this.hideLoading();
+                              });
     }
 
     private void hideLoading() {

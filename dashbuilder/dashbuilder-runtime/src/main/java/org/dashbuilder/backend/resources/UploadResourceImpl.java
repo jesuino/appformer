@@ -52,19 +52,6 @@ public class UploadResourceImpl {
     @Inject
     RuntimeModelRegistry runtimeModelRegistry;
 
-    @PostConstruct
-    public void createBaseDir() {
-        java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
-        if (!baseDirPath.toFile().exists()) {
-            try {
-                Files.createDirectory(baseDirPath);
-            } catch (IOException e) {
-                logger.debug("Error creating base directory for imports: {}", baseDirPath, e);
-                throw new RuntimeException("Base directory for imports could not be created: " + baseDirPath, e);
-            }
-        }
-    }
-
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@MultipartForm FileUploadModel form) throws IOException {

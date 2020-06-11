@@ -72,8 +72,15 @@ public interface RuntimeModelRegistry {
     /**
      * Store the import from a File path;
      * @param filePath
-     * The path to the file
+     * The path to the file.
      */
     Optional<RuntimeModel> registerFile(String filePath);
+
+    /**
+     * Removes a runtime model.
+     * @param runtimeModelid
+     * The id of the runtime model to be removed.
+     */
+    void remove(String runtimeModelid);
 
 }

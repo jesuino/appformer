@@ -36,5 +36,5 @@ public interface AppConstants extends Messages {
     String runtimeScreenTitle();
 
     String uploadDashboardsTitle();
-
+    
 }

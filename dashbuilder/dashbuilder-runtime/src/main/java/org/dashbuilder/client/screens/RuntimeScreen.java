@@ -16,15 +16,14 @@
 package org.dashbuilder.client.screens;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.dashbuilder.client.ClientRuntimeModelLoader;
 import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.navigation.NavigationManager;
+import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.navigation.NavTree;
-import org.dashbuilder.shared.event.RuntimeModelEvent;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -63,20 +62,13 @@ public class RuntimeScreen {
     View view;
 
     @Inject
-    NavigationManager navigationManager;
-
-    @Inject
     NavBarHelper menusHelper;
 
     @Inject
     PlaceManager placeManager;
 
     @Inject
-    Event<RuntimeModelEvent> runtimeModelEvent;
-
-    @Inject
     ClientRuntimeModelLoader modelLoader;
-    private RuntimeModel currentRuntimeModel;
 
     @WorkbenchPartTitle
     public String getScreenTitle() {
@@ -90,43 +82,35 @@ public class RuntimeScreen {
 
     @OnOpen
     public void onOpen() {
-        openRuntimeModel(null);
+        openRuntimeModel();
     }
 
-    public void openRuntimeModel(String importID) {
-        if (this.currentRuntimeModel != null) {
-            return;
-        }
-        if (importID == null || importID.trim().isEmpty()) {
-            modelLoader.loadModel(this::loadDashboards,
-                                  this::showEmptyContent,
-                                  this::errorLoadingModel);
-        } else {
-            modelLoader.loadModel(importID,
-                                  this::loadDashboards,
-                                  this::showEmptyContent,
-                                  this::errorLoadingModel);
-        }
+    public void openRuntimeModel() {
+        view.loading();
+        modelLoader.loadModel(this::loadDashboards,
+                              this::showEmptyContent,
+                              this::errorLoadingModel);
     }
 
     private void loadDashboards(RuntimeModel runtimeModel) {
-        this.currentRuntimeModel = runtimeModel;
         view.stopLoading();
         NavTree navTree = runtimeModel.getNavTree();
         Menus menus = menusHelper.buildMenusFromNavTree(navTree).build();
         view.addMenus(menus);
-        navigationManager.setDefaultNavTree(navTree);
-        runtimeModelEvent.fire(new RuntimeModelEvent(runtimeModel));
     }
+
+    // these two methods should first check for existing models, so it could go to models list view - BEFORE MAKE UPLOAD MODEL A COMPONENT!
 
     private void showEmptyContent() {
         view.stopLoading();
-        placeManager.goTo(UploadDashboardsScreen.ID);
+        // Here I will check for existing models to first 
+        placeManager.goTo(EmptyScreen.ID);
     }
 
-    private void errorLoadingModel(Exception e, Throwable t) {
+    private void errorLoadingModel(Object message, Throwable t) {
         view.stopLoading();
         view.errorLoadingDashboards(t);
+        placeManager.goTo(EmptyScreen.ID);
     }
 
 }
