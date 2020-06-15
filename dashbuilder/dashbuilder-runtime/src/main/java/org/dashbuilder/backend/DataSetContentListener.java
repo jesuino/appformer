@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.dashbuilder.backend.services.dataset.RuntimeCSVFileStorage;
 import org.dashbuilder.backend.services.dataset.provider.RuntimeDataSetProviderRegistry;
-import org.dashbuilder.dataset.def.CSVDataSetDef;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.json.DataSetDefJSONMarshaller;

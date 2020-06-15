@@ -34,6 +34,9 @@ import org.uberfire.commons.data.Pair;
 public class RuntimeOptions {
 
     Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
+    
+    
+    public static final String DASHBOARD_EXTENSION = ".zip";
 
     /**
      * Base Directory where dashboards ZIPs are stored
@@ -150,7 +153,7 @@ public class RuntimeOptions {
     }
 
     public String buildFilePath(String fileId) {
-        return String.join("/", getImportsBaseDir(), fileId).concat(".zip");
+        return String.join("/", getImportsBaseDir(), fileId).concat(DASHBOARD_EXTENSION);
     }
 
 }

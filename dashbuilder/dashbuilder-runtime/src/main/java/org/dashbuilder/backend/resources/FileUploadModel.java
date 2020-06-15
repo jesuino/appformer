@@ -16,6 +16,8 @@
 
 package org.dashbuilder.backend.resources;
 
+import java.io.InputStream;
+
 import javax.ws.rs.FormParam;
 
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
@@ -26,15 +28,15 @@ import org.jboss.resteasy.annotations.providers.multipart.PartType;
  */
 public class FileUploadModel {
 
-    private byte[] fileData;
+    private InputStream fileData;
 
-    public byte[] getFileData() {
+    public InputStream getFileData() {
         return fileData;
     }
 
     @FormParam("selectedFile")
     @PartType("application/octet-stream")
-    public void setFileData(final byte[] fileData) {
+    public void setFileData(final InputStream fileData) {
         this.fileData = fileData;
     }
 }
