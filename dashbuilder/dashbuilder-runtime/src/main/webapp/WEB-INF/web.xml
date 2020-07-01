@@ -50,13 +50,23 @@
 		<welcome-file>dashbuilder.html</welcome-file>
 	</welcome-file-list>
 
+	<!-- Custom Component assets server -->
+
+	<servlet>
+		<servlet-name>DashbuilderExternalComponentsServlet</servlet-name>
+		<servlet-class>org.dashbuilder.external.ExternalComponentServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DashbuilderExternalComponentsServlet</servlet-name>
+		<url-pattern>/dashbuilder/component/*</url-pattern>
+	</servlet-mapping>
+
 	<login-config>
 		<auth-method>FORM</auth-method>
 		<form-login-config>
 			<form-login-page>/login.html</form-login-page>
 			<form-error-page>/login.html?loginMessage=Login failed. Please try
-				again.
-			</form-error-page>
+				again.</form-error-page>
 		</form-login-config>
 	</login-config>
 
@@ -81,7 +91,7 @@
 		<error-code>403</error-code>
 		<location>/not_authorized.jsp</location>
 	</error-page>
-	
+
 	<!-- Default security constraints. -->
 	<security-constraint>
 		<web-resource-collection>
@@ -91,6 +101,7 @@
 			<url-pattern>/org.dashbuilder.DashbuilderRuntime/*</url-pattern>
 			<url-pattern>*.erraiBus</url-pattern>
 			<url-pattern>/plugins/*</url-pattern>
+			<url-pattern>/dashbuilder/component/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>

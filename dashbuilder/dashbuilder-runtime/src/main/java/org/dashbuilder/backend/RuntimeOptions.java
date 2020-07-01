@@ -16,7 +16,6 @@
 
 package org.dashbuilder.backend;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ public class RuntimeOptions {
 
     private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
 
-    private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
+    private static final int DEFAULT_UPLOAD_SIZE = 10 * 1024 * 1024;
 
     private boolean multipleImport;
     private boolean allowExternal;
@@ -60,7 +59,7 @@ public class RuntimeOptions {
         String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, Boolean.FALSE.toString());
 
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
-        importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
+        importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder/imports");
         multipleImport = Boolean.parseBoolean(multipleImportStr);
         allowExternal = Boolean.parseBoolean(allowExternalStr);
 
