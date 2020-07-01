@@ -39,7 +39,7 @@ public class RuntimeOptions {
 
     private static final String DEFAULT_MODEL_DIR = "/tmp/dashbuilder/models";
 
-    private static final int DEFAULT_UPLOAD_SIZE_KB = 96 * 1024;
+    private static final int DEFAULT_UPLOAD_SIZE_KB =  10 * 1024 * 1024;
 
     /**
      * Base Directory where dashboards ZIPs are stored

@@ -16,6 +16,8 @@
 
 package org.dashbuilder.backend.services.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import org.dashbuilder.backend.navigation.RuntimeNavigationBuilder;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
+import org.dashbuilder.external.service.ExternalComponentLoader;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DataSetContent;
@@ -51,6 +54,7 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import static org.dashbuilder.shared.model.ImportDefinitions.DATASET_DEF_PREFIX;
 import static org.dashbuilder.shared.model.ImportDefinitions.NAVIGATION_FILE;
 import static org.dashbuilder.shared.model.ImportDefinitions.PERSPECTIVE_SUFFIX;
+import static org.dashbuilder.transfer.DataTransferServices.COMPONENTS_EXPORT_PATH;
 
 /**
  * Parses an exported zip file from Transfer Services into RuntimeModel.
@@ -70,6 +74,9 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
 
     @Inject
     RuntimeModelRegistry registry;
+
+    @Inject
+    ExternalComponentLoader externalComponentLoader;
 
     Gson gson;
 
@@ -108,7 +115,11 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
                     }
 
                     if (entryName.equalsIgnoreCase(NAVIGATION_FILE)) {
-                        navTreeOp = Optional.of(nextEntryContent(zis));
+                        navTreeOp = Optional.of(nextEntryContentAsString(zis));
+                    }
+
+                    if (entryName.startsWith(COMPONENTS_EXPORT_PATH)) {
+                        extractComponentFile(zis, entry.getName());
                     }
                 }
             }
@@ -128,7 +139,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     }
 
     private LayoutTemplate retrieveLayoutTemplate(final ZipInputStream zis) {
-        String content = nextEntryContent(zis);
+        String content = nextEntryContentAsString(zis);
         return gson.fromJson(content, LayoutTemplate.class);
     }
 
@@ -137,11 +148,11 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
         String[] nameParts = fileName.split("\\.");
         String id = nameParts[0];
         String ext = nameParts[1];
-        String content = nextEntryContent(zis);
+        String content = nextEntryContentAsString(zis);
         return new DataSetContent(id, content, DataSetContentType.fromFileExtension(ext));
     }
 
-    private String nextEntryContent(final ZipInputStream zis) {
+    private String nextEntryContentAsString(final ZipInputStream zis) {
         try {
             final int BUFFER_SIZE = 8192;
             byte[] buffer = new byte[BUFFER_SIZE];
@@ -180,5 +191,24 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     protected String transformId(String modelId, String id) {
         return id + "| RuntimeModel=" + modelId;
     }
+    
+    private void extractComponentFile(ZipInputStream zis, String name) throws IOException {
+        String externalComponentsDir = externalComponentLoader.getExternalComponentsDir();
+        if (externalComponentsDir != null) {
+            externalComponentsDir = externalComponentsDir.endsWith(File.separator) ? externalComponentsDir : externalComponentsDir + "/";
+            String newFileName = externalComponentsDir + name.replaceAll(COMPONENTS_EXPORT_PATH, "");
+            File target = new File(newFileName);
+            target.getParentFile().mkdirs();
+            
+            final int BUFFER_SIZE = 1024;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int read = 0;
+            try (FileOutputStream fos = new FileOutputStream(target)) {
+                while ((read = zis.read(buffer, 0, BUFFER_SIZE)) >= 0) {
+                    fos.write(buffer, 0, read);
+                }
+            }
+        }
 
+    }
 }
