@@ -76,6 +76,8 @@ public class DisplayerEditor implements IsWidget {
         void setDisplaySettingsEnabled(boolean enabled);
 
         void setDataSetLookupConfEnabled(boolean enabled);
+        
+        void setComponentSettingsEnabled(boolean enabled);
 
         void gotoTypeSelection(DisplayerTypeSelector typeSelector);
 
@@ -88,6 +90,9 @@ public class DisplayerEditor implements IsWidget {
         void error(String error);
 
         void error(ClientRuntimeError error);
+
+        void gotoExternalComponentSettings(ExternalComponentPropertiesEditor externalComponentPropertiesEditor);
+
     }
 
     protected View view = null;
@@ -107,6 +112,7 @@ public class DisplayerEditor implements IsWidget {
     protected boolean typeSelectionEnabled = true;
     protected boolean dataLookupConfEnabled = true;
     protected boolean displaySettingsEnabled = true;
+    protected boolean externalComponentSettingsEnabled = false;
     protected Event<DisplayerEditorSavedEvent> saveEvent;
     protected Event<DisplayerEditorClosedEvent> closeEvent;
     protected Command onCloseCommand = () -> {};
@@ -114,7 +120,9 @@ public class DisplayerEditor implements IsWidget {
     protected DisplayerType displayerType = DisplayerType.BARCHART;
     protected DisplayerSubType displayerSubType = null;
     protected RendererManager rendererManager;
+    private ExternalComponentPropertiesEditor externalComponentPropertiesEditor;
     protected String currentRenderer = "";
+
 
     DisplayerListener displayerListener = new AbstractDisplayerListener() {
         public void onError(Displayer displayer, ClientRuntimeError error) {
@@ -134,7 +142,8 @@ public class DisplayerEditor implements IsWidget {
                            DisplayerHtmlEditor displayerHtmlEditor,
                            Event<DisplayerEditorSavedEvent> savedEvent,
                            Event<DisplayerEditorClosedEvent> closedEvent,
-                           RendererManager rendererManager) {
+                           RendererManager rendererManager,
+                           ExternalComponentPropertiesEditor externalComponentPropertiesEditor) {
         this.view = view;
         this.displayerLocator = displayerLocator;
         this.clientServices = clientServices;
@@ -147,6 +156,7 @@ public class DisplayerEditor implements IsWidget {
         this.saveEvent = savedEvent;
         this.closeEvent = closedEvent;
         this.rendererManager = rendererManager;
+        this.externalComponentPropertiesEditor = externalComponentPropertiesEditor;
 
         view.init(this);
     }
@@ -174,6 +184,7 @@ public class DisplayerEditor implements IsWidget {
         initTypeSelector();
         initLookupEditor();
         initSettingsEditor();
+        initComponentEditor();
         gotoLastSection();
         showDisplayer();
         
@@ -181,6 +192,10 @@ public class DisplayerEditor implements IsWidget {
         if (currentRenderer == null || currentRenderer.trim().isEmpty()) {
             currentRenderer = rendererManager.getDefaultRenderer(displayerSettings.getType()).getUUID();
         }
+    }
+
+    private void initComponentEditor() {
+        externalComponentPropertiesEditor.init(displayerSettings);
     }
 
     protected boolean supportsHtmlTemplate() {
@@ -261,6 +276,11 @@ public class DisplayerEditor implements IsWidget {
         displaySettingsEnabled = enabled;
         view.setDisplaySettingsEnabled(enabled);
     }
+    
+    public void setExternalComponentSettingsEnabled(boolean enabled) {
+        externalComponentSettingsEnabled = enabled;
+        view.setComponentSettingsEnabled(enabled);
+    }
 
     public void setOnSaveCommand(Command saveCommand) {
         this.onSaveCommand = saveCommand != null ? saveCommand : onCloseCommand;
@@ -306,6 +326,8 @@ public class DisplayerEditor implements IsWidget {
         }
         else if (displaySettingsEnabled) {
             gotoDisplaySettings();
+        } else if(externalComponentSettingsEnabled) {
+            gotoExternalComponentSettings();
         } else {
             view.error("Nothing to show!");
         }
@@ -315,6 +337,9 @@ public class DisplayerEditor implements IsWidget {
         int lastOption = editorStatus.getSelectedOption(displayerSettings.getUUID());
         if (activeSection < 0 || activeSection != lastOption) {
             switch (lastOption) {
+                case 3:
+                    gotoExternalComponentSettings();
+                    break;
                 case 2:
                     gotoDisplaySettings();
                     break;
@@ -345,6 +370,13 @@ public class DisplayerEditor implements IsWidget {
         activeSection = 2;
         editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
         view.gotoDisplaySettings(settingsEditor);
+    }
+    
+    public void gotoExternalComponentSettings() {
+        activeSection = 3;
+        editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
+        externalComponentPropertiesEditor.init(displayerSettings);
+        view.gotoExternalComponentSettings(externalComponentPropertiesEditor);
     }
 
     public void save() {

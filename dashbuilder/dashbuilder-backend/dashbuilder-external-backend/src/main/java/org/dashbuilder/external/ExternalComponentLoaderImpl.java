@@ -55,15 +55,14 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
     private boolean isExternalComponentEnabled;
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
         gson = new Gson();
         isExternalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.TRUE.toString()));
         externalComponentsDir = System.getProperty(EXTERNAL_COMP_DIR_PROP, DEFAULT_COMPONENTS_PATH);
         if (isExternalComponentEnabled) {
             Path baseDirPath = Paths.get(externalComponentsDir);
             if (!baseDirPath.toFile().exists()) {
-                baseDirPath.toFile().getParentFile().mkdirs();
-                Files.createDirectory(baseDirPath);
+                baseDirPath.toFile().mkdirs();
             }
         }
     }

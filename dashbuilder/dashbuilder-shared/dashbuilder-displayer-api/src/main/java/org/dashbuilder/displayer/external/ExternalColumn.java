@@ -13,14 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- #externalComponentPropertiesPane {
-    width: 100%;
-    height: 100%;
- }
- 
-#externalComponentPropertiesRoot {
-    overflow: auto;
-    height: auto;
-    width: 100%;
+
+package org.dashbuilder.displayer.external;
+
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
+
+@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
+public class ExternalColumn {
+    
+    @JsProperty
+    String name;
+    
+    @JsProperty
+    String type;
+    
+    @JsOverlay
+    public static ExternalColumn of(String name, String type) {
+        ExternalColumn column = new ExternalColumn();
+        column.name = name;
+        column.type = type;
+        return column;
+    }
+
 }

@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Window;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLIFrameElement;
+import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -43,6 +44,8 @@ public class ExternalComponentView implements ExternalComponentPresenter.View {
 
     private JavaScriptObject lastProps;
 
+    private ExternalComponentMessage lastMessage;
+
     @Override
     public HTMLElement getElement() {
         return componentRoot;
@@ -50,7 +53,7 @@ public class ExternalComponentView implements ExternalComponentPresenter.View {
 
     @Override
     public void init(ExternalComponentPresenter presenter) {
-        
+
     }
 
     @Override
@@ -59,22 +62,28 @@ public class ExternalComponentView implements ExternalComponentPresenter.View {
         componentReady = false;
         externalComponentIFrame.onload = e -> {
             componentReady = true;
-            postMessage(lastProps);
+            if (lastProps != null) {
+                postMessageToComponent(lastProps);
+            }
+            if (lastMessage != null) {
+                postMessageToComponent(lastMessage);
+            }
             return null;
         };
     }
 
     @Override
-    public void postProperties(JavaScriptObject props) {
-        this.lastProps = props;
+    public void postMessage(ExternalComponentMessage message) {
+        this.lastMessage = message;
         if (componentReady) {
-            postMessage(props);
-        } 
+            postMessageToComponent(message);
+        }
+        
     }
-
-    private void postMessage(JavaScriptObject props) {
+    
+    private void postMessageToComponent(Object message) {
         if (externalComponentIFrame != null && externalComponentIFrame.contentWindow != null) {
-            externalComponentIFrame.contentWindow.postMessage(props, Window.Location.getHref());
+            externalComponentIFrame.contentWindow.postMessage(message, Window.Location.getHref());
         }
     }
 

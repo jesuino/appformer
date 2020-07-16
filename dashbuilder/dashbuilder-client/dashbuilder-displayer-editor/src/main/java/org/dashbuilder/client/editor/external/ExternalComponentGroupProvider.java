@@ -22,11 +22,14 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.dashbuilder.client.editor.DisplayerDragComponent;
 import org.dashbuilder.external.model.ExternalComponent;
 import org.dashbuilder.external.service.ExternalComponentService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorComponentGroupProvider;
 
@@ -36,6 +39,9 @@ public class ExternalComponentGroupProvider implements PerspectiveEditorComponen
 
     @Inject
     Caller<ExternalComponentService> externalComponentService;
+
+    @Inject
+    SyncBeanManager beanManager;
 
     List<ExternalComponent> loadedComponents = Collections.emptyList();
 
@@ -55,21 +61,18 @@ public class ExternalComponentGroupProvider implements PerspectiveEditorComponen
         LayoutDragComponentGroup group = new LayoutDragComponentGroup(getName());
 
         loadedComponents.forEach(comp -> {
-            ExternalDragComponent dragComp = produceDragComponent(comp);
-            dragComp.setSettingValue(ExternalDragComponent.COMPONENT_ID_KEY, comp.getId());
+            ExternalDisplayerDragComponent dragComp = produceDragComponent(comp);
             group.addLayoutDragComponent(comp.getId(), dragComp);
         });
 
         return group;
     }
 
-    private ExternalDragComponent produceDragComponent(ExternalComponent comp) {
-        if (comp.getParameters() != null && !comp.getParameters().isEmpty()) {
-            ExternalDragComponentWithProps dragComponentWithProps = new ExternalDragComponentWithProps(comp.getName(), comp.getIcon());
-            comp.getParameters().forEach(p -> dragComponentWithProps.setSettingValue(p.getName(), p.getDefaultValue()));
-            return dragComponentWithProps;
-        }
-        return new ExternalDragComponent(comp.getName(), comp.getIcon());
+    private ExternalDisplayerDragComponent produceDragComponent(ExternalComponent comp) {
+        ExternalDisplayerDragComponent dragComp = beanManager.lookupBean(ExternalDisplayerDragComponent.class).getInstance();
+        dragComp.setDragInfo(comp.getName(), comp.getIcon());
+        dragComp.setComponentId(comp.getId());
+        return dragComp;
     }
 
 }

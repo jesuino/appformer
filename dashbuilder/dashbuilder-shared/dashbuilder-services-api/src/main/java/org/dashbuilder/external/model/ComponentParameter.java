@@ -25,6 +25,7 @@ public class ComponentParameter {
 
     private String name;
     private String type;
+    private String category;
     private String defaultValue;
     private String label;
     private List<String> comboValues;
@@ -43,6 +44,15 @@ public class ComponentParameter {
 
     public void setType(String type) {
         this.type = type;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
+
+    
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getDefaultValue() {

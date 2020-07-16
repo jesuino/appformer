@@ -16,23 +16,16 @@
 
 package org.dashbuilder.displayer.client.widgets;
 
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.user.client.ui.Widget;
-import jsinterop.base.Js;
+import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.uberfire.client.mvp.UberElemental;
 
 @Dependent
-public class ExternalComponentPresenter extends Widget {
+public class ExternalComponentPresenter {
 
     final String COMPONENT_SERVER_PATH = "dashbuilder/component";
 
@@ -40,7 +33,7 @@ public class ExternalComponentPresenter extends Widget {
 
         void setComponentURL(String url);
 
-        void postProperties(JavaScriptObject javaScriptObject);
+        void postMessage(ExternalComponentMessage message);
     }
 
     @Inject
@@ -49,7 +42,6 @@ public class ExternalComponentPresenter extends Widget {
     @PostConstruct
     public void init() {
         view.init(this);
-        super.setElement(Js.<Element> uncheckedCast(view.getElement()));
     }
 
     public void withComponent(String componentId) {
@@ -57,10 +49,12 @@ public class ExternalComponentPresenter extends Widget {
         view.setComponentURL(url);
     }
 
-    public void setComponentProperties(Map<String, String> props) {
-        JSONObject params = new JSONObject();
-        props.forEach((k, v) -> params.put(k, new JSONString(v)));
-        view.postProperties(params.getJavaScriptObject());
+    public void sendMessage(ExternalComponentMessage message) {
+        view.postMessage(message);
+    }
+
+    public View getView() {
+        return view;
     }
 
 }

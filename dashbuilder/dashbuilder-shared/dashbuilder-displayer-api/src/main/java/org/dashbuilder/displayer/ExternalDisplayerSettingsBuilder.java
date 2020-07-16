@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- #externalComponentPropertiesPane {
-    width: 100%;
-    height: 100%;
- }
- 
-#externalComponentPropertiesRoot {
-    overflow: auto;
-    height: auto;
-    width: 100%;
+package org.dashbuilder.displayer;
+
+/**
+ * A displayer settings builder for external components
+ *
+ */
+public interface ExternalDisplayerSettingsBuilder<T extends ExternalDisplayerSettingsBuilder> extends DisplayerSettingsBuilder<T> {
+
+    
 }

@@ -62,7 +62,7 @@ public class ExternalComponentServlet extends HttpServlet {
         String componentId = pathParts[1];
         String assetPath = Arrays.stream(pathParts).skip(2).collect(joining(File.separator));
 
-        logger.info("Retrieving asset {} for component.", componentId, assetPath);
+        logger.info("Retrieving asset {} for component {}", assetPath, componentId);
 
         try {
             InputStream assetStream = assetProvider.openAsset(componentId, assetPath);
