@@ -16,7 +16,6 @@
 
 package org.dashbuilder.displayer.client.widgets;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +23,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
 import elemental2.dom.DomGlobal;
 import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.uberfire.client.mvp.UberElemental;
@@ -31,14 +31,13 @@ import org.uberfire.client.mvp.UberElemental;
 @Dependent
 public class ExternalComponentPresenter {
 
-    private static final String COMPONENT_ID = "id";
+    private static final String COMPONENT_ID = "component_id";
 
     final String COMPONENT_SERVER_PATH = "dashbuilder/component";
-    
-    final String componentId = UUID.randomUUID().toString();
-    
+
+    final String componentId = DOM.createUniqueId();
+
     private Consumer<ExternalComponentMessage> messageConsumer;
-    
 
     public interface View extends UberElemental<ExternalComponentPresenter> {
 
@@ -64,7 +63,7 @@ public class ExternalComponentPresenter {
         message.setProperty(COMPONENT_ID, componentId);
         view.postMessage(message);
     }
-    
+
     public void receiveMessage(ExternalComponentMessage message) {
         Object destinationId = message.getProperty(COMPONENT_ID);
         if (!componentId.equals(destinationId)) {
@@ -80,12 +79,11 @@ public class ExternalComponentPresenter {
     public View getView() {
         return view;
     }
-    
-    
+
     public void setMessageConsumer(Consumer<ExternalComponentMessage> messageConsumer) {
         this.messageConsumer = messageConsumer;
     }
-    
+
     public String getComponentId() {
         return componentId;
     }

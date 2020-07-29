@@ -17,14 +17,19 @@ package org.dashbuilder.renderer.client.external;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import elemental2.dom.DomGlobal;
+import jsinterop.base.Js;
+import org.dashbuilder.common.client.widgets.FilterLabel;
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
@@ -35,6 +40,7 @@ import org.dashbuilder.displayer.external.ExternalColumn;
 import org.dashbuilder.displayer.external.ExternalColumnSettings;
 import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.dashbuilder.displayer.external.ExternalDataSet;
+import org.dashbuilder.displayer.external.ExternalFilterRequest;
 
 @Dependent
 public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalComponentDisplayer.View> {
@@ -44,6 +50,8 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         void setSize(int chartWidth, int chartHeight);
 
         void setMargin(int chartMarginTop, int chartMarginRight, int chartMarginBottom, int chartMarginLeft);
+        
+        void setFilterLabelSet(FilterLabelSet widget);
 
     }
 
@@ -52,6 +60,9 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
 
     @Inject
     ExternalComponentPresenter externalComponentPresenter;
+    
+    @Inject
+    FilterLabelSet filterLabelSet;
 
     private String componentId;
 
@@ -63,6 +74,9 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
     @PostConstruct
     public void init() {
         view.init(this);
+        view.setFilterLabelSet(filterLabelSet);
+        this.filterLabelSet.setOnClearAllCommand(this::onFilterClearAll);
+        externalComponentPresenter.setMessageConsumer(this::receiveMessage);
     }
 
     @Override
@@ -111,6 +125,7 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
                        displayerSettings.getChartMarginRight(),
                        displayerSettings.getChartMarginBottom(),
                        displayerSettings.getChartMarginLeft());
+        updateFilterStatus();
     }
 
     private ExternalColumn[] buildColumns() {
@@ -157,4 +172,50 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
                                  settings);
 
     }
+
+    private void receiveMessage(ExternalComponentMessage message) {
+        Object filterProp = message.getProperty("filter");
+        if (displayerSettings.isFilterEnabled() && filterProp != null) {
+            ExternalFilterRequest filterRequest = Js.cast(filterProp);
+            if (filterRequest.isReset()) {
+                super.filterReset();
+            } else {
+                DataColumn column = dataSet.getColumnByIndex(filterRequest.getColumn());
+                super.filterUpdate(column.getId(), filterRequest.getRow());
+            }
+            updateFilterStatus();
+        }
+    }
+    
+    protected void updateFilterStatus() {
+        filterLabelSet.clear();
+        Set<String> columnFilters = filterColumns();
+        if (displayerSettings.isFilterEnabled() && !columnFilters.isEmpty()) {
+
+            for (String columnId : columnFilters) {
+                List<Interval> selectedValues = filterIntervals(columnId);
+                DataColumn column = dataSet.getColumnById(columnId);
+                for (Interval interval : selectedValues) {
+                    String formattedValue = formatInterval(interval, column);
+                    FilterLabel filterLabel = filterLabelSet.addLabel(formattedValue);
+                    filterLabel.setOnRemoveCommand(() -> onFilterLabelRemoved(columnId, interval.getIndex()));
+                }
+            }
+        }
+    }
+    
+    void onFilterLabelRemoved(String columnId, int row) {
+        super.filterUpdate(columnId, row);
+        if (!displayerSettings.isFilterSelfApplyEnabled()) {
+            updateVisualization();
+        }
+    }
+    
+    void onFilterClearAll() {
+        super.filterReset();
+        if (!displayerSettings.isFilterSelfApplyEnabled()) {
+            updateVisualization();
+        }
+    }
+
 }

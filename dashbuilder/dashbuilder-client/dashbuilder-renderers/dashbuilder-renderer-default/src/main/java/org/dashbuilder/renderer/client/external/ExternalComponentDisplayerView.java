@@ -24,7 +24,10 @@ import elemental2.dom.CSSProperties.WidthUnionType;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import jsinterop.base.Js;
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.displayer.client.AbstractErraiDisplayerView;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -37,10 +40,15 @@ public class ExternalComponentDisplayerView extends AbstractErraiDisplayerView<E
     @DataField
     HTMLDivElement externalComponentDisplayerRoot;
 
+    @Inject
+    Elemental2DomUtil domUtil;
+
+    private HTMLElement externalComponentView;
+
     @Override
     public void init(ExternalComponentDisplayer presenter) {
         super.setPresenter(presenter);
-        HTMLElement externalComponentView = presenter.getExternalComponentPresenter().getView().getElement();
+        externalComponentView = presenter.getExternalComponentPresenter().getView().getElement();
         externalComponentDisplayerRoot.appendChild(externalComponentView);
         super.setVisualization(Js.cast(externalComponentDisplayerRoot));
     }
@@ -67,6 +75,14 @@ public class ExternalComponentDisplayerView extends AbstractErraiDisplayerView<E
 
     private String asPixel(int value) {
         return value + "px";
+    }
+
+    @Override
+    public void setFilterLabelSet(FilterLabelSet widget) {
+        org.jboss.errai.common.client.dom.HTMLElement element = widget.getElement();
+        element.getStyle().setProperty("position", "absolute");
+        element.getStyle().setProperty("z-index", "20");
+        externalComponentDisplayerRoot.insertBefore(Js.cast(element), externalComponentView);
     }
 
 }
