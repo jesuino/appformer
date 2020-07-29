@@ -25,12 +25,14 @@ import javax.inject.Inject;
 import elemental2.dom.DomGlobal;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.displayer.client.AbstractErraiDisplayer;
 import org.dashbuilder.displayer.client.widgets.ExternalComponentPresenter;
 import org.dashbuilder.displayer.external.ExternalColumn;
+import org.dashbuilder.displayer.external.ExternalColumnSettings;
 import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.dashbuilder.displayer.external.ExternalDataSet;
 
@@ -114,7 +116,7 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
     private ExternalColumn[] buildColumns() {
         return dataSet.getColumns()
                       .stream()
-                      .map(cl -> ExternalColumn.of(cl.getId(), cl.getColumnType().name()))
+                      .map(this::buildExternalColumn)
                       .toArray(ExternalColumn[]::new);
     }
 
@@ -130,14 +132,29 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         for (int i = 0; i < rows; i++) {
             String line[] = new String[cols];
             for (int j = 0; j < cols; j++) {
+                String formattedValue = super.formatValue(i, j);
+                DomGlobal.console.log(formattedValue);
                 line[j] = columnValueToString(dataSet.getValueAt(i, j));
             }
             result[i] = line;
-        }      
+        }
         return result;
     }
 
     protected String columnValueToString(Object mightBeNull) {
         return mightBeNull == null ? "" : mightBeNull.toString();
+    }
+
+    protected ExternalColumn buildExternalColumn(DataColumn cl) {
+        ColumnSettings clSettings = displayerSettings.getColumnSettings(cl);
+        ExternalColumnSettings settings = ExternalColumnSettings.of(clSettings.getColumnId(),
+                                                                    clSettings.getColumnName(),
+                                                                    clSettings.getValueExpression(),
+                                                                    clSettings.getEmptyTemplate(),
+                                                                    clSettings.getValuePattern());
+        return ExternalColumn.of(cl.getId(),
+                                 cl.getColumnType().name(),
+                                 settings);
+
     }
 }

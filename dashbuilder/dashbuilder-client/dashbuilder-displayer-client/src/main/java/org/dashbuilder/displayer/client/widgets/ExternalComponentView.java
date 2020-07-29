@@ -21,9 +21,13 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Window;
+import elemental2.dom.CustomEvent;
+import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLIFrameElement;
+import elemental2.dom.MessageEvent;
+import jsinterop.base.Js;
 import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -53,7 +57,13 @@ public class ExternalComponentView implements ExternalComponentPresenter.View {
 
     @Override
     public void init(ExternalComponentPresenter presenter) {
-
+        DomGlobal.window.addEventListener("message", e -> {
+            MessageEvent<Object> event = Js.cast(e);
+            if (event.data instanceof ExternalComponentMessage) {
+                ExternalComponentMessage message = Js.cast(event.data);
+                presenter.receiveMessage(message);
+            }
+        });
     }
 
     @Override
@@ -78,9 +88,9 @@ public class ExternalComponentView implements ExternalComponentPresenter.View {
         if (componentReady) {
             postMessageToComponent(message);
         }
-        
+
     }
-    
+
     private void postMessageToComponent(Object message) {
         if (externalComponentIFrame != null && externalComponentIFrame.contentWindow != null) {
             externalComponentIFrame.contentWindow.postMessage(message, Window.Location.getHref());

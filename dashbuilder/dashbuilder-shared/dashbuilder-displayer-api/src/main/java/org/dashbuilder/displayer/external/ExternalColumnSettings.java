@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.dashbuilder.displayer.external;
 
 import jsinterop.annotations.JsOverlay;
@@ -22,23 +21,32 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class ExternalColumn {
-    
+public class ExternalColumnSettings {
+
     @JsProperty
-    String name;
-    
+    String columnId;
     @JsProperty
-    String type;
-    
-    ExternalColumnSettings settings;
-    
+    String columnName;
+    @JsProperty
+    String valueExpression;
+    @JsProperty
+    String emptyTemplate;
+    @JsProperty
+    String valuePattern;
+
     @JsOverlay
-    public static ExternalColumn of(String name, String type, ExternalColumnSettings settings) {
-        ExternalColumn column = new ExternalColumn();
-        column.name = name;
-        column.type = type;
-        column.settings = settings;
-        return column;
+    public static ExternalColumnSettings of(String columnId,
+                                            String columnName,
+                                            String valueExpression,
+                                            String emptyTemplate,
+                                            String valuePattern) {
+        ExternalColumnSettings settings = new ExternalColumnSettings();
+        settings.columnId = columnId;
+        settings.columnName = columnName;
+        settings.valueExpression = valueExpression;
+        settings.emptyTemplate = emptyTemplate;
+        settings.valuePattern = valuePattern;
+        return settings;
     }
 
 }
