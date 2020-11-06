@@ -1,5 +1,5 @@
 {
-  "name": "@dashbuilder-js/logo-component",
+  "name": "@dashbuilder-js/component-api",
   "version": "0.1.0",
   "description": "",
   "license": "Apache-2.0",
@@ -20,9 +20,6 @@
     "build": "yarn run lint && yarn test && yarn run build:fast",
     "build:prod": "yarn run build --mode production --devtool none",
     "start": "webpack-dev-server -d --host 0.0.0.0"
-  },
-  "dependencies": {
-    "@dashbuilder-js/component-api": "0.1.0"
   },
   "babel": {
     "presets": [
