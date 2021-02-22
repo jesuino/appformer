@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class ComponentLoaderImpl implements ComponentLoader {
 
-    Logger logger = LoggerFactory.getLogger(ComponentLoaderImpl.class);
-
     public static final String EXTERNAL_COMP_DIR_PROP = "dashbuilder.components.dir";
     public static final String EXTERNAL_COMP_ENABLE_PROP = "dashbuilder.components.enable";
-    public static final String DESCRIPTOR_FILE = "manifest.json";
+    
+    Logger logger = LoggerFactory.getLogger(ComponentLoaderImpl.class);
+
 
     private static final String DEFAULT_COMPONENTS_PATH = "/tmp/dashbuilder/components/";
 

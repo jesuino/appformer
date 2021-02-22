@@ -23,7 +23,9 @@ import org.dashbuilder.displayer.DisplayerSettings;
 public class LineChartSettingsBuilderImpl extends AbstractXAxisChartSettingsBuilder<LineChartSettingsBuilderImpl> implements LineChartSettingsBuilder<LineChartSettingsBuilderImpl> {
 
     protected DisplayerSettings createDisplayerSettings() {
-        return new DisplayerSettings( DisplayerType.LINECHART );
+        DisplayerSettings settings = new DisplayerSettings(DisplayerType.LINECHART);
+        settings.setSubtype(DisplayerSubType.LINE);
+        return settings;
     }
 
     @Override

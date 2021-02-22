@@ -22,10 +22,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import elemental2.dom.DomGlobal;
+import elemental2.dom.URLSearchParams;
 import org.dashbuilder.client.navbar.AppNavBar;
 import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.navigation.NavTree;
+import org.dashbuilder.shared.event.UpdatedRuntimeModelEvent;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -64,7 +67,7 @@ public class RuntimeScreen {
 
     @Inject
     PlaceManager placeManager;
-    
+
     @Inject
     AppNavBar appNavBar;
 
